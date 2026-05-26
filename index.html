@@ -775,7 +775,7 @@ function renderProfile(d) {
     <div class="section" style="grid-column: 1 / -1">
       <div class="section-label">Why These Scores</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
-        ${Object.entries(e||{}).map(([k,v])=>`
+        ${Object.entries(e||{}).filter(([k,v])=>v!==null).map(([k,v])=>`
           <div class="explain-item">
             <div class="explain-title">
               ${k.charAt(0).toUpperCase()+k.slice(1)}
