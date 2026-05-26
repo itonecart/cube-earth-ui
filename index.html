@@ -703,6 +703,7 @@ function renderProfile(d) {
         <div class="agro-card">
           <div class="agro-label">Grazing</div>
           <div class="agro-value ${scoreColor(ag.grazing_suitability?.label)}">${ag.grazing_suitability?.label||'—'}</div>
+          ${ag.grazing_suitability?.score !== undefined ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${ag.grazing_suitability.score}/${ag.grazing_suitability.max_score||8}</div>` : ''}
         </div>
         <div class="agro-card">
           <div class="agro-label">Machinery</div>
@@ -713,6 +714,15 @@ function renderProfile(d) {
           <div class="agro-value ${scoreColor(ag.slurry_spreading?.suitable)}">${ag.slurry_spreading?.suitable||'—'}</div>
         </div>
       </div>
+      ${ag.grazing_suitability?.breakdown ? `
+      <div style="margin-top:12px;font-size:12px;">
+        <div style="font-weight:600;color:var(--text);margin-bottom:6px;">Grazing score breakdown:</div>
+        ${Object.entries(ag.grazing_suitability.breakdown).map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
+            <span style="color:var(--muted)">${v.reason}</span>
+            <span style="font-weight:600;color:${v.points>0?'var(--green)':v.points<0?'var(--red)':'var(--muted)'}">${v.points>0?'+':''}${v.points}</span>
+          </div>`).join('')}
+      </div>` : ''}
     </div>
 
     <!-- AGREEMENT -->
