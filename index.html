@@ -443,6 +443,77 @@
     font-size: 14px;
     color: var(--red);
   }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    body { overflow: auto; height: auto; }
+
+    .topbar {
+      padding: 10px 12px;
+      gap: 8px;
+      flex-wrap: wrap;
+      height: auto;
+    }
+
+    .logo { font-size: 15px; }
+    .tagline { display: none; }
+
+    .coord-input {
+      font-size: 14px;
+      padding: 10px 12px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .btn-scan {
+      font-size: 14px;
+      padding: 10px 16px;
+    }
+
+    .main { flex-direction: column; height: auto; }
+
+    #map { height: 35vh; }
+
+    #panel {
+      overflow: visible;
+      padding-bottom: 60px;
+    }
+
+    .profile {
+      grid-template-columns: 1fr;
+    }
+
+    .section {
+      border-right: none;
+      padding: 16px;
+    }
+
+    .conf-score { font-size: 40px; }
+
+    .contrib-grid { grid-template-columns: 1fr 1fr; }
+
+    .sensor-grid { grid-template-columns: 1fr 1fr; }
+
+    .sensor-value { font-size: 20px; }
+
+    .agro-grid { grid-template-columns: 1fr 1fr 1fr; }
+
+    .freshness-grid { grid-template-columns: 1fr; }
+
+    .agreement-list li { font-size: 13px; }
+
+    .explain-because li { font-size: 13px; }
+
+    .parcel-name { font-size: 16px; }
+  }
+
+  @media (max-width: 400px) {
+    .sensor-grid { grid-template-columns: 1fr; }
+    .contrib-grid { grid-template-columns: 1fr; }
+    .agro-grid { grid-template-columns: 1fr; }
+    .conf-score { font-size: 36px; }
+  }
+
 </style>
 </head>
 <body>
