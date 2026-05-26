@@ -699,6 +699,29 @@ function renderProfile(d) {
     <!-- FIELD DECISIONS -->
     <div class="section">
       <div class="section-label">Field Decisions Today</div>
+
+      ${ag.crop_class === 'tillage' || ag.crop_class === 'arable' ? `
+      <!-- TILLAGE DECISIONS -->
+      <div class="agro-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="agro-card">
+          <div class="agro-label">Crop Canopy</div>
+          <div class="agro-value ${scoreColor(ag.tillage_intelligence?.crop_condition?.label)}">${ag.tillage_intelligence?.crop_condition?.label||'—'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">NDVI ${ag.tillage_intelligence?.crop_condition?.ndvi||'—'}</div>
+        </div>
+        <div class="agro-card">
+          <div class="agro-label">Soil Moisture</div>
+          <div class="agro-value ${scoreColor(ag.tillage_intelligence?.moisture_condition?.label)}">${ag.tillage_intelligence?.moisture_condition?.label||'—'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">${ag.tillage_intelligence?.moisture_condition?.surface_m3||'—'} m³/m³</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:12px;">
+        <div style="font-weight:600;margin-bottom:4px;">Machinery:</div>
+        <div style="color:var(--muted)">${ag.tillage_intelligence?.machinery_note||'—'}</div>
+        ${ag.tillage_intelligence?.crop_condition?.age_note ? `
+        <div style="margin-top:6px;color:var(--amber);font-size:11px;">⚠ ${ag.tillage_intelligence.crop_condition.age_note}</div>` : ''}
+      </div>
+      ` : `
+      <!-- GRASSLAND DECISIONS -->
       <div class="agro-grid">
         <div class="agro-card">
           <div class="agro-label">Grazing</div>
@@ -723,6 +746,7 @@ function renderProfile(d) {
             <span style="font-weight:600;color:${v.points>0?'var(--green)':v.points<0?'var(--red)':'var(--muted)'}">${v.points>0?'+':''}${v.points}</span>
           </div>`).join('')}
       </div>` : ''}
+      `}
     </div>
 
     <!-- AGREEMENT -->
