@@ -638,7 +638,7 @@ function renderProfile(d) {
       <div class="parcel-name">${p ? p.crop||'Unknown crop' : 'No parcel matched'}</div>
       <div class="parcel-meta">
         ${p ? `${p.claim_area} ha &nbsp;·&nbsp; ${p.olr||''}` : ''}
-        &nbsp;·&nbsp; ${te.elevation_m}m elevation &nbsp;·&nbsp; ${te.terrain}
+        &nbsp;·&nbsp; ${te?.elevation_m ?? "?"}m elevation &nbsp;·&nbsp; ${te?.terrain ?? "unknown"}
       </div>
       <div>
         ${p?.grassland ? '<span class="badge badge-green">Grassland</span>' : ''}
