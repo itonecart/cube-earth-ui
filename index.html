@@ -505,6 +505,7 @@ function renderProfile(d){
         <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">NDVI ${freshnessEmoji(f?.sentinel2?.freshness)} ${f?.sentinel2?.age_label||''}</div>
         <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</div>
         <div style="font-size:11px;color:var(--muted)">${v?.ndvi_status||''}</div>
+        ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.trend_arrow} ${d.vegetation_trend.trend_label}</div>`:''}
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.smap?.freshness)==='fresh'?'var(--green)':'#f59e0b'}">
         <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">SMAP ${freshnessEmoji(f?.smap?.freshness)} ${f?.smap?.age_label||''}</div>
@@ -620,6 +621,40 @@ function renderProfile(d){
   </div>
 
   <div class="section" style="padding:12px 18px">
+    <div class="section-label">Vegetation Trend (GEE 90-day)</div>
+    ${(()=>{
+      const vt = d?.vegetation_trend;
+      if(!vt?.available) return '<div style="font-size:12px;color:var(--muted)">GEE trend unavailable</div>';
+      const col = vt.long_trend==='increasing'||vt.long_trend==='strong_increase'?'var(--green)':vt.long_trend==='stable'?'var(--muted)':'var(--red)';
+      return `<div style="font-size:20px;font-weight:700;color:${col};margin-bottom:6px">${vt.trend_arrow} ${vt.trend_label}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">90-day change: ${vt.long_diff>=0?'+':''}${vt.long_diff} NDVI · ${vt.count} observations</div>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:40px;margin-bottom:4px">
+        ${(vt.series||[]).map(s=>{
+          const h=Math.max(4,Math.round(s.ndvi*100));
+          const c=s.ndvi>0.5?'var(--green)':s.ndvi>0.3?'#f59e0b':'var(--red)';
+          return `<div style="flex:1;height:${h}px;background:${c};border-radius:2px 2px 0 0" title="${s.date}: ${s.ndvi}"></div>`;
+        }).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted)">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>`;
+    })()}
+  </div>
+
+  <div class="section" style="padding:12px 18px">
+  <div class="section" style="padding:12px 18px">
+    <div class="section-label">Vegetation Trend (GEE 90-day)</div>
+    ${(()=>{
+      const vt = d?.vegetation_trend;
+      if(!vt?.available) return '<div style="font-size:12px;color:var(--muted)">GEE trend unavailable</div>';
+      const col = vt.long_trend==='increasing'||vt.long_trend==='strong_increase'?'var(--green)':vt.long_trend==='stable'?'var(--muted)':'var(--red)';
+      return `<div style="font-size:20px;font-weight:700;color:${col};margin-bottom:6px">${vt.trend_arrow} ${vt.trend_label}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">90-day change: ${vt.long_diff>=0?'+':''}${vt.long_diff} NDVI · ${vt.count} observations</div>
+      <div style="display:flex;gap:2px;align-items:flex-end;height:40px;margin-bottom:4px">
+        ${(vt.series||[]).map(s=>{const h=Math.max(4,Math.round(s.ndvi*100));const c=s.ndvi>0.5?'var(--green)':s.ndvi>0.3?'#f59e0b':'var(--red)';return `<div style="flex:1;height:${h}px;background:${c};border-radius:2px 2px 0 0" title="${s.date}: ${s.ndvi}"></div>`;}).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted)">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>`;
+    })()}
+  </div>
+
     <div class="section-label">Moisture Trend</div>
     ${(()=>{
       const smap=sm?.smap?.sm_surface_m3;
