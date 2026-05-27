@@ -657,14 +657,14 @@ function renderProfile(d){
         : vt.long_trend==='strong_decline'||vt.long_trend==='declining'
         ? cropClass==='tillage'?'Crop maturity · Harvest transition · Senescence':'Harvest · Senescence · Grazing · Cutting'
         : 'Stable canopy · Consistent conditions';
-      const maxNdvi = Math.max(...(vt.series||[]).map(s=>s.ndvi));
+      const _series=(vt.series||[]); const maxNdvi = _series.length?Math.max.apply(null,_series.map(s=>s.ndvi)):1;
       return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span style="font-size:18px;font-weight:700;color:${col}">${vt.trend_arrow} ${vt.trend_label}</span>
         <span style="font-size:11px;color:var(--muted)">${vt.long_diff>=0?'+':''}${vt.long_diff} NDVI · ${vt.count} obs</span>
       </div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Possible causes: ${causes}</div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600">NDVI TIMELINE</div>
-      <div style="width:100%;overflow:hidden;box-sizing:border-box;padding-right:4px">${(vt.series||[]).map(s=>{
+      <div style="width:100%;overflow:hidden;box-sizing:border-box;padding-right:4px">${_series.map(s=>{
         const w=Math.round((s.ndvi/maxNdvi)*100);
         const c=s.ndvi>0.5?'var(--green)':s.ndvi>0.3?'#f59e0b':'var(--red)';
         const dateLabel=s.date.substring(5,10).replace('-','/');
