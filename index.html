@@ -271,7 +271,7 @@ function highlightParcel(lat,lng,areaHa){
 
 function scanCoords(){
   const val=document.getElementById('coord-input').value.trim();
-  const parts=val.split(',').map(s=>parseFloat(s.trim()));
+  const parts=val.trim().split(',').map(s=>parseFloat(s.trim()));
   if(parts.length===2&&!isNaN(parts[0])&&!isNaN(parts[1])){
     placeMarker(parts[0],parts[1]);
     map.flyTo([parts[0],parts[1]],14);
