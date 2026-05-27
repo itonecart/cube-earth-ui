@@ -396,16 +396,18 @@ function renderProfile(d) {
         <div class="conf-score">${c.score}<span>/10</span></div>
         <div>
           <div class="conf-class ${cc.css}">${cc.label}</div>
+          <div style="font-size:10px;background:${(c.uncertainty||[]).length===0?'#f0fdf4':(c.uncertainty||[]).length===1?'#fffbeb':'#fee2e2'};color:${(c.uncertainty||[]).length===0?'#166534':(c.uncertainty||[]).length===1?'#92400e':'#991b1b'};padding:2px 8px;border-radius:100px;font-weight:600">Uncertainty: ${(c.uncertainty||[]).length===0?'Low':(c.uncertainty||[]).length===1?'Moderate':'High'}</div>
         </div>
       </div>
       <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
       <button class="conf-toggle" onclick="toggleConf()">▼ View confidence factors</button>
       <div class="conf-details" id="conf-details">
-        <div class="contrib-grid">
+        <div class="contrib-bars">
           ${Object.entries(c.contributions).map(([k,v])=>`
-            <div class="contrib-item ${v.percent===0?'zero':''}">
-              <div class="contrib-name">${k}${v.age_days ? ` · ${v.age_days}d` : ''}</div>
-              <div class="contrib-pct">${v.percent===0 ? 'unavailable' : v.percent.toFixed(1)+'%'}</div>
+            <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+              <div style="flex:1;font-size:12px;color:var(--text)">${k}${v.age_days?` <span style='font-size:10px;color:var(--muted)'>(${v.age_days}d)</span>`:''}</div>
+              <div style="width:70px;height:4px;background:var(--border);border-radius:2px"><div style="height:100%;border-radius:2px;background:${v.percent===0?'var(--border)':'var(--green)'};width:${Math.min(v.percent*3,100)}%"></div></div>
+              <div style="font-size:12px;font-weight:600;width:34px;text-align:right;color:${v.percent===0?'var(--muted)':'var(--text)'}">${v.percent===0?'—':v.percent.toFixed(1)+'%'}</div>
             </div>`).join('')}
         </div>
         ${(c.confidence_reducers||[]).length > 0 ? `
@@ -514,6 +516,23 @@ function renderProfile(d) {
       </ul>
     </div>
 
+    <!-- MOISTURE TREND -->
+    <div class="section">
+      <div class="section-label">Moisture Trend</div>
+      <div id="moisture-trend-content">
+        ${(()=>{
+          const smap = sm?.smap?.sm_surface_m3;
+          const era5 = sm?.era5?.surface_mean;
+          if (!smap || !era5) return '<div style="font-size:12px;color:var(--muted)">Insufficient data</div>';
+          const diff = smap - era5;
+          const arrow = diff > 0.05 ? "\u2191" : diff < -0.05 ? "\u2193" : "\u2192";
+          const label = diff > 0.05 ? "Wetter than seasonal average" : diff < -0.05 ? "Drier than seasonal average" : "Near seasonal average";
+          const col = diff > 0.05 ? "#1d4ed8" : diff < -0.05 ? "#d97706" : "#16a34a";
+          return `<div style="font-size:22px;font-weight:700;color:${col};margin-bottom:4px">${arrow} ${label}</div><div style="font-size:12px;color:var(--muted)">SMAP ${smap.toFixed(3)} vs ERA5 ${era5.toFixed(3)} m\u00b3/m\u00b3 (diff ${diff>=0?'+':''}${diff.toFixed(3)})</div><div style="font-size:11px;color:var(--muted);margin-top:4px">SMAP = current observation \u00b7 ERA5 = seasonal baseline</div>`;
+        })()}
+      </div>
+    </div>
+
     <!-- FRESHNESS -->
     <div class="section">
       <div class="section-label">Data Freshness</div>
@@ -527,6 +546,54 @@ function renderProfile(d) {
             <span class="fresh-age">${freshnessLabel(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
           </div>`).join('')}
       </div>
+    </div>
+
+    <!-- DATA QUALITY -->
+    <div class="section">
+      <div class="section-label">Data Quality</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Freshness</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${(()=>{const ages=[f?.sentinel2?.age_days,f?.smap?.age_days,f?.sentinel1?.age_days].filter(x=>x!=null);if(!ages.length)return'5.0';const avg=ages.reduce((a,b)=>a+b,0)/ages.length;return avg<3?'9.5':avg<7?'8.5':avg<14?'7.0':'5.5';})()}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Agreement</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Coverage</div>
+          <div style="font-size:14px;font-weight:700;color:${d?.thermal?.available?'var(--green)':'var(--amber)'}"> ${d?.thermal?.available?'Full':'Partial'}</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Evidence</div>
+          <div style="font-size:14px;font-weight:700;color:${a.score>=9?'var(--green)':a.score>=7?'var(--amber)':'var(--red)'}"> ${a.score>=9?'Strong':a.score>=7?'Moderate':'Weak'}</div>
+        </div>
+      </div>
+      ${!d?.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">\u26a0 Missing: Thermal layer (ECOSTRESS) — limited by Atlantic cloud cover</div>':''}
+    </div>
+
+    <!-- DATA QUALITY -->
+    <div class="section">
+      <div class="section-label">Data Quality</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Freshness</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${(()=>{const ages=[f?.sentinel2?.age_days,f?.smap?.age_days,f?.sentinel1?.age_days].filter(x=>x!=null);if(!ages.length)return"5.0";const avg=ages.reduce((a,b)=>a+b,0)/ages.length;return avg<3?"9.5":avg<7?"8.5":avg<14?"7.0":"5.5";})()}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Agreement</div>
+          <div style="font-size:20px;font-weight:700;color:var(--green)">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Coverage</div>
+          <div style="font-size:14px;font-weight:700;color:${d?.thermal?.available?"var(--green)":"var(--amber)"}"> ${d?.thermal?.available?"Full":"Partial"}</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Evidence</div>
+          <div style="font-size:14px;font-weight:700;color:${a.score>=9?"var(--green)":a.score>=7?"var(--amber)":"var(--red)"}"> ${a.score>=9?"Strong":a.score>=7?"Moderate":"Weak"}</div>
+        </div>
+      </div>
+      ${!d?.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">&#9888; Missing: Thermal layer (ECOSTRESS)</div>':""}
     </div>
 
     <!-- EXPLAINABILITY -->
