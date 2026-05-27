@@ -306,6 +306,22 @@ function confClass(score){
   if(score>=5.0)return{label:'Moderate',css:'moderate'};
   return{label:'Limited',css:'limited'};
 }
+function ndviStatusLabel(ndvi){
+  if(ndvi===null||ndvi===undefined) return 'No data';
+  if(ndvi<0.2)  return 'Bare soil or very sparse';
+  if(ndvi<0.4)  return 'Sparse vegetation';
+  if(ndvi<0.6)  return 'Moderate vegetation';
+  if(ndvi<0.8)  return 'Strong vegetation';
+  return 'Dense canopy';
+}
+function ndviStatusLabel(ndvi){
+  if(ndvi===null||ndvi===undefined) return 'No data';
+  if(ndvi<0.2)  return 'Bare soil or very sparse';
+  if(ndvi<0.4)  return 'Sparse vegetation';
+  if(ndvi<0.6)  return 'Moderate vegetation';
+  if(ndvi<0.8)  return 'Strong vegetation';
+  return 'Dense canopy';
+}
 function scoreColor(label){
   if(!label)return'';
   const l=label.toLowerCase();
@@ -404,6 +420,8 @@ function renderProfile(d){
   <div class="section">
     <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label||'Field'}</div>
     <div class="parcel-name">${p?p.crop||'Unknown crop':'<span style="color:var(--amber)">⚠ No parcel in database</span>'}</div>
+    ${!p?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Satellite sensors still operational — confidence reflects sensor data only</div>':''}
+    ${!p?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Satellite sensors still operational — confidence reflects sensor data only</div>':''}
     <div class="parcel-meta">${p?`${p.claim_area} ha · ${p.olr||''}`:''} ${te?.elevation_m?`· ${te.elevation_m}m`:''} ${te?.terrain?`· ${te.terrain}`:''}</div>
     <div style="margin-top:6px">
       ${p?.grassland?'<span class="badge badge-green">Grassland</span>':''}
@@ -504,7 +522,7 @@ function renderProfile(d){
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.sentinel2?.freshness)==='fresh'?'var(--green)':freshnessClass(f?.sentinel2?.freshness)==='recent'?'#f59e0b':'var(--red)'}">
         <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">NDVI ${freshnessEmoji(f?.sentinel2?.freshness)} ${f?.sentinel2?.age_label||''}</div>
         <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</div>
-        <div style="font-size:11px;color:var(--muted)">${v?.ndvi_status||''}</div>
+        <div style="font-size:11px;color:var(--muted)">${ndviStatusLabel(v?.ndvi)}</div>
         ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.trend_arrow} ${d.vegetation_trend.trend_label}</div>`:''}
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.smap?.freshness)==='fresh'?'var(--green)':'#f59e0b'}">
@@ -638,17 +656,17 @@ function renderProfile(d){
       </div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:8px">Possible causes: ${causes}</div>
       <div style="font-size:10px;color:var(--muted);margin-bottom:4px;font-weight:600">NDVI TIMELINE</div>
-      ${(vt.series||[]).map(s=>{
+      <div style="width:100%;overflow:hidden;box-sizing:border-box;padding-right:4px">${(vt.series||[]).map(s=>{
         const w=Math.round((s.ndvi/maxNdvi)*100);
         const c=s.ndvi>0.5?'var(--green)':s.ndvi>0.3?'#f59e0b':'var(--red)';
         const mo=s.date.substring(5,7);
         const months={'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'};
-        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-          <span style="font-size:9px;color:var(--muted);width:24px">${months[mo]||mo}</span>
-          <div style="flex:1;height:5px;background:var(--border);border-radius:2px"><div style="height:100%;width:${w}%;background:${c};border-radius:2px"></div></div>
-          <span style="font-size:9px;font-family:var(--mono);color:var(--text);width:36px;text-align:right">${s.ndvi}</span>
+        return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;width:100%;overflow:hidden">
+          <span style="font-size:9px;color:var(--muted);width:24px;flex-shrink:0">${months[mo]||mo}</span>
+          <div style="flex:1;min-width:0;height:5px;background:var(--border);border-radius:2px"><div style="height:100%;width:${w}%;background:${c};border-radius:2px"></div></div>
+          <span style="font-size:9px;font-family:var(--mono);color:var(--text);width:42px;text-align:right;flex-shrink:0">${s.ndvi}</span>
         </div>`;
-      }).join('')}
+      }).join('')}</div>
       <div style="font-size:10px;color:var(--muted);margin-top:4px">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>`;
     })()}
   </div>
