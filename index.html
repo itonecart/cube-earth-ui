@@ -376,7 +376,7 @@ async function scanField(lat,lng){
     if(data.success)renderProfile(data);
     else showError(data.detail||'API error');
   }catch(err){
-    showError('Could not reach Cube Earth API — try again in 30 seconds.');
+    showError('Error: ' + (err.message||err.toString()));
   }
 }
 
