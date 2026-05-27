@@ -639,7 +639,7 @@ function renderProfile(d){
   </div>
 
   <div class="section" style="padding:12px 18px">
-    <div class="section-label">Vegetation Trend (GEE 90-day)</div>
+    <div class="section-label">Vegetation Trend — 90-day NDVI History</div>
     ${(()=>{
       const vt = d?.vegetation_trend;
       if(!vt?.available) return '<div style="font-size:12px;color:var(--muted)">GEE trend unavailable</div>';
@@ -667,7 +667,8 @@ function renderProfile(d){
           <span style="font-size:9px;font-family:var(--mono);color:var(--text);width:42px;text-align:right;flex-shrink:0">${s.ndvi}</span>
         </div>`;
       }).join('')}</div>
-      <div style="font-size:10px;color:var(--muted);margin-top:4px">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>`;
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>
+      <div style="font-size:9px;color:var(--muted);margin-top:6px;padding-top:4px;border-top:1px solid var(--border)">Source: Sentinel-2 SR processed with Google Earth Engine</div>`;
     })()}
   </div>
 
@@ -684,18 +685,7 @@ function renderProfile(d){
     })()}
   </div>
 
-  <div class="section">
-    <div class="section-label">Why These Scores</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
-      ${Object.entries(e||{}).filter(([k,v])=>v!==null).map(([k,v])=>`
-      <div>
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${k.charAt(0).toUpperCase()+k.slice(1)} <span style="font-size:12px;font-weight:400;color:var(--muted)">→ ${v?.label||''}</span></div>
-        <ul style="list-style:none">
-          ${(v?.because||[]).map(b=>`<li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid var(--border)"><span style="position:absolute;left:0;color:var(--border)">—</span>${b}</li>`).join('')}
-        </ul>
-      </div>`).join('')}
-    </div>
-  </div>`;
+`;
 
   // ── TAB: CONFIDENCE ──
   const confidenceHtml=`
