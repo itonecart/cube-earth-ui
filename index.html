@@ -241,7 +241,7 @@ satellite.addTo(map);
 L.control.layers({'🛰 Satellite':satellite,'🗺 Streets':streets},{},{position:'topright'}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);
 
-let marker=null;
+let marker=null; let parcelCircle=null;
 const icon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#16a34a;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #16a34a"></div>',iconSize:[14,14],iconAnchor:[7,7]});
 
 map.on('click',e=>{
@@ -251,7 +251,23 @@ map.on('click',e=>{
   scanField(lat,lng);
 });
 
-function placeMarker(lat,lng){if(marker)marker.remove();marker=L.marker([lat,lng],{icon}).addTo(map);}
+function placeMarker(lat,lng){
+  if(marker)marker.remove();
+  marker=L.marker([lat,lng],{icon}).addTo(map);
+}
+function highlightParcel(lat,lng,areaHa){
+  if(parcelCircle)parcelCircle.remove();
+  if(!lat||!lng)return;
+  const r=Math.sqrt((areaHa||2)*10000/Math.PI);
+  parcelCircle=L.circle([lat,lng],{
+    radius:r,
+    color:'#16a34a',
+    weight:3,
+    fill:true,
+    fillColor:'#16a34a',
+    fillOpacity:0.15,
+  }).addTo(map);
+}
 
 function scanCoords(){
   const val=document.getElementById('coord-input').value.trim();
@@ -713,6 +729,9 @@ function renderProfile(d){
     <div class="tab-content" id="tab-quality">${qualityHtml}</div>`;
 
   document.getElementById('tabs').style.display='flex';
+  if(p?.centroid_lat&&p?.centroid_lng){
+    highlightParcel(p.centroid_lat, p.centroid_lng, p.claim_area);
+  }
 }
 
 function showError(msg){
