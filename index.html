@@ -8,200 +8,197 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:       #ffffff;
-    --surface:  #f8fafc;
-    --border:   #e2e8f0;
-    --green:    #16a34a;
-    --green-lt: #dcfce7;
-    --amber:    #d97706;
-    --amber-lt: #fef3c7;
-    --red:      #dc2626;
-    --red-lt:   #fee2e2;
-    --text:     #0f172a;
-    --muted:    #64748b;
-    --mono:     'JetBrains Mono', monospace;
-    --sans:     'Inter', sans-serif;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:var(--sans); background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+:root {
+  --bg:#fff; --surface:#f8fafc; --border:#e2e8f0;
+  --green:#16a34a; --green-lt:#dcfce7;
+  --amber:#d97706; --amber-lt:#fef3c7;
+  --red:#dc2626; --red-lt:#fee2e2;
+  --blue:#1d4ed8; --blue-lt:#dbeafe;
+  --text:#0f172a; --muted:#64748b;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Inter',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-  /* ── TOP BAR ── */
-  .topbar { height:52px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:12px; flex-shrink:0; z-index:1000; }
-  .logo { font-size:15px; font-weight:700; color:var(--green); letter-spacing:-0.02em; white-space:nowrap; }
-  .logo span { color:var(--text); }
-  .coord-input { flex:1; max-width:260px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:8px; outline:none; transition:border-color 0.15s; }
-  .coord-input:focus { border-color:var(--green); }
-  .btn-scan { background:var(--green); color:#fff; border:none; font-family:var(--sans); font-size:13px; font-weight:600; padding:7px 18px; border-radius:8px; cursor:pointer; transition:background 0.15s; white-space:nowrap; }
-  .btn-scan:hover { background:#15803d; }
-  .btn-scan:disabled { background:#86efac; cursor:not-allowed; }
-  .tagline { font-size:11px; color:var(--muted); margin-left:auto; white-space:nowrap; }
+/* TOPBAR */
+.topbar{height:50px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:1000;}
+.logo{font-size:15px;font-weight:700;color:var(--green);white-space:nowrap;}
+.logo span{color:var(--text);}
+.coord-input{flex:1;max-width:240px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 11px;border-radius:8px;outline:none;}
+.coord-input:focus{border-color:var(--green);}
+.btn-scan{background:var(--green);color:#fff;border:none;font-size:13px;font-weight:600;padding:7px 16px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+.btn-scan:disabled{background:#86efac;cursor:not-allowed;}
+.tagline{font-size:11px;color:var(--muted);margin-left:auto;white-space:nowrap;}
 
-  /* ── MAIN ── */
-  .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-  #map { height:28vh; flex-shrink:0; cursor:crosshair; z-index:1; }
-  #panel { flex:1; overflow-y:auto; background:var(--bg); border-top:2px solid var(--border); padding-bottom:40px; }
-  #panel::-webkit-scrollbar { width:4px; }
-  #panel::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+/* MAP */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#map{height:32vh;flex-shrink:0;cursor:crosshair;}
 
-  /* ── IDLE ── */
-  .idle { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:12px; color:var(--muted); padding:40px; text-align:center; }
-  .idle-icon { width:52px; height:52px; background:var(--green-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; }
-  .idle h3 { font-size:16px; color:var(--text); font-weight:600; }
-  .idle p { font-size:14px; line-height:1.6; max-width:300px; }
+/* TABS */
+.tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg);flex-shrink:0;overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
 
-  /* ── LOADING ── */
-  .loading { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:16px; }
-  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--green); border-radius:50%; animation:spin 0.8s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .loading-steps { font-size:13px; color:var(--muted); text-align:center; line-height:2.2; }
-  .loading-steps .step { display:block; opacity:0.35; transition:opacity 0.3s; }
-  .loading-steps .step.active { opacity:1; color:var(--green); font-weight:500; }
+/* PANEL */
+#panel{flex:1;overflow-y:auto;background:var(--bg);}
+#panel::-webkit-scrollbar{width:4px;}
+#panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
-  /* ── PROFILE GRID ── */
-  .profile { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); }
+/* TAB CONTENT */
+.tab-content{display:none;padding:0 0 40px;}
+.tab-content.active{display:block;}
 
-  /* ── SECTION ── */
-  .section { padding:16px 20px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
-  .section-label { font-size:10px; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
+/* SECTIONS */
+.section{padding:16px 18px;border-bottom:1px solid var(--border);}
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.two-col .section{border-right:1px solid var(--border);}
+.two-col .section:nth-child(even){border-right:none;}
 
-  /* ── PARCEL BADGE ── */
-  .parcel-badge { display:inline-flex; align-items:center; gap:6px; background:var(--green-lt); color:var(--green); font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px; }
-  .parcel-name { font-size:17px; font-weight:700; color:var(--text); margin-bottom:5px; line-height:1.3; }
-  .parcel-meta { font-size:13px; color:var(--muted); line-height:1.6; }
-  .badge { display:inline-block; font-size:11px; font-weight:500; padding:2px 9px; border-radius:100px; margin-right:5px; margin-top:6px; }
-  .badge-green { background:var(--green-lt); color:var(--green); }
-  .badge-amber { background:var(--amber-lt); color:var(--amber); }
-  .badge-gray  { background:var(--surface); color:var(--muted); border:1px solid var(--border); }
+/* IDLE */
+.idle{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:12px;color:var(--muted);padding:40px;text-align:center;}
+.idle h3{font-size:16px;color:var(--text);font-weight:600;}
+.idle p{font-size:13px;line-height:1.6;max-width:280px;}
 
-  /* ── CONFIDENCE ── */
-  .conf-row { display:flex; align-items:flex-end; gap:12px; margin-bottom:6px; }
-  .conf-score { font-size:44px; font-weight:700; color:var(--green); line-height:1; }
-  .conf-score span { font-size:18px; color:var(--muted); font-weight:400; }
-  .conf-class { font-size:11px; font-weight:700; letter-spacing:0.08em; padding:3px 10px; border-radius:100px; text-transform:uppercase; margin-bottom:2px; }
-  .conf-class.operational { background:#dbeafe; color:#1d4ed8; }
-  .conf-class.high-conf   { background:var(--green-lt); color:var(--green); }
-  .conf-class.moderate    { background:var(--amber-lt); color:var(--amber); }
-  .conf-class.limited     { background:var(--red-lt); color:var(--red); }
-  .conf-bar-wrap { height:5px; background:var(--border); border-radius:3px; margin-bottom:12px; }
-  .conf-bar-fill { height:100%; background:var(--green); border-radius:3px; transition:width 0.8s ease; }
+/* LOADING */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:16px;}
+.spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-steps{font-size:12px;color:var(--muted);text-align:center;line-height:2.2;}
+.step{display:block;opacity:0.3;transition:opacity 0.3s;}
+.step.active{opacity:1;color:var(--green);font-weight:500;}
 
-  /* Expandable confidence */
-  .conf-toggle { font-size:12px; color:var(--green); cursor:pointer; border:none; background:none; padding:0; font-weight:500; margin-bottom:8px; }
-  .conf-details { display:none; }
-  .conf-details.open { display:block; }
+/* PARCEL */
+.parcel-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-lt);color:var(--green);font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:7px;}
+.parcel-name{font-size:18px;font-weight:700;margin-bottom:4px;line-height:1.3;}
+.parcel-meta{font-size:13px;color:var(--muted);}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:100px;margin-right:4px;margin-top:5px;}
+.badge-green{background:var(--green-lt);color:var(--green);}
+.badge-amber{background:var(--amber-lt);color:var(--amber);}
+.badge-gray{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
 
-  .contrib-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
-  .contrib-item { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
-  .contrib-name { font-size:10px; color:var(--muted); margin-bottom:3px; }
-  .contrib-pct  { font-size:14px; font-weight:600; color:var(--text); }
-  .contrib-item.zero .contrib-pct { color:var(--muted); }
+/* CONFIDENCE */
+.conf-hero{display:flex;align-items:flex-start;gap:14px;margin-bottom:10px;}
+.conf-score{font-size:48px;font-weight:700;color:var(--green);line-height:1;}
+.conf-score span{font-size:18px;color:var(--muted);font-weight:400;}
+.conf-badges{display:flex;flex-direction:column;gap:5px;padding-top:6px;}
+.conf-class{font-size:10px;font-weight:700;letter-spacing:0.08em;padding:3px 10px;border-radius:100px;text-transform:uppercase;display:inline-block;}
+.conf-class.operational{background:var(--blue-lt);color:var(--blue);}
+.conf-class.high-conf{background:var(--green-lt);color:var(--green);}
+.conf-class.moderate{background:var(--amber-lt);color:var(--amber);}
+.conf-class.limited{background:var(--red-lt);color:var(--red);}
+.uncertainty-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:100px;display:inline-block;}
+.conf-bar-wrap{height:5px;background:var(--border);border-radius:3px;margin-bottom:12px;}
+.conf-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width 0.8s ease;}
 
-  .conf-panel { margin:6px 0; padding:10px 12px; border-radius:8px; font-size:12px; }
-  .conf-panel.reduced    { background:#fffbeb; border:1px solid #fde68a; }
-  .conf-panel.boosted    { background:#f0fdf4; border:1px solid #86efac; }
-  .conf-panel-title      { font-weight:600; margin-bottom:4px; }
-  .conf-panel.reduced .conf-panel-title { color:#92400e; }
-  .conf-panel.boosted .conf-panel-title { color:#166534; }
-  .conf-panel-item       { padding:2px 0; }
-  .conf-panel.reduced .conf-panel-item { color:#78350f; }
-  .conf-panel.boosted .conf-panel-item { color:#15803d; }
+/* DECISIONS */
+.decision-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.decision-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;}
+.decision-emoji{font-size:24px;margin-bottom:5px;}
+.decision-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;margin-bottom:5px;}
+.decision-value{font-size:14px;font-weight:700;}
+.decision-value.good{color:var(--green);}
+.decision-value.moderate{color:var(--amber);}
+.decision-value.poor{color:var(--red);}
+.decision-sub{font-size:10px;color:var(--muted);margin-top:3px;}
 
-  /* ── SENSORS ── */
-  .sensor-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .sensor-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; position:relative; }
-  .sensor-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
-  .sensor-card.fresh::before   { background:var(--green); }
-  .sensor-card.recent::before  { background:#f59e0b; }
-  .sensor-card.stale::before   { background:var(--red); }
-  .sensor-card.no-data::before { background:var(--border); }
-  .sensor-name { font-size:10px; font-weight:600; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
-  .sensor-value { font-size:22px; font-weight:700; color:var(--text); line-height:1; margin-bottom:3px; font-family:var(--mono); }
-  .sensor-unit  { font-size:11px; color:var(--muted); line-height:1.4; }
-  .sensor-age   { display:flex; align-items:center; gap:4px; margin-top:6px; font-size:10px; }
-  .dot-fresh   { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; }
-  .dot-recent  { width:7px; height:7px; border-radius:50%; background:#f59e0b; display:inline-block; }
-  .dot-stale   { width:7px; height:7px; border-radius:50%; background:var(--red); display:inline-block; }
-  .dot-nodata  { width:7px; height:7px; border-radius:50%; background:#cbd5e1; display:inline-block; }
+/* SENSOR CARDS */
+.sensor-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:8px;cursor:pointer;}
+.sensor-header{display:flex;align-items:center;padding:12px 14px;gap:10px;}
+.sensor-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sensor-dot.fresh{background:var(--green);}
+.sensor-dot.recent{background:#f59e0b;}
+.sensor-dot.stale{background:var(--red);}
+.sensor-dot.no-data{background:#cbd5e1;}
+.sensor-info{flex:1;}
+.sensor-name-row{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;}
+.sensor-val-row{display:flex;align-items:baseline;gap:6px;}
+.sensor-value{font-size:22px;font-weight:700;font-family:var(--mono);}
+.sensor-unit{font-size:11px;color:var(--muted);}
+.sensor-age-row{font-size:10px;color:var(--muted);margin-top:2px;}
+.sensor-age-bar{height:3px;background:var(--border);margin:0 14px 10px;}
+.sensor-age-fill{height:100%;border-radius:1px;}
+.sensor-expand{background:white;border-top:1px solid var(--border);padding:10px 14px;display:none;}
+.sensor-expand.open{display:block;}
+.sensor-expand-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border);}
+.sensor-expand-row:last-child{border:none;}
+.sensor-chevron{font-size:12px;color:var(--muted);transition:transform 0.2s;}
+.sensor-chevron.open{transform:rotate(180deg);}
 
-  /* ── DECISIONS ── */
-  .decision-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
-  .decision-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; text-align:center; }
-  .decision-emoji { font-size:22px; margin-bottom:6px; }
-  .decision-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:6px; }
-  .decision-value { font-size:15px; font-weight:700; }
-  .decision-value.good     { color:var(--green); }
-  .decision-value.moderate { color:var(--amber); }
-  .decision-value.poor     { color:var(--red); }
-  .decision-sub { font-size:10px; color:var(--muted); margin-top:3px; }
+/* AGREEMENT */
+.agreement-score{font-size:34px;font-weight:700;color:var(--green);margin-bottom:8px;}
+.agreement-list{list-style:none;}
+.agreement-list li{font-size:12px;padding:5px 0 5px 18px;position:relative;border-bottom:1px solid var(--border);line-height:1.5;}
+.agreement-list li:last-child{border:none;}
+.agreement-list li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:600;}
+.agreement-list li.flag::before{content:'!';color:var(--amber);}
+.agreement-list li.flag{color:var(--amber);}
 
-  /* ── AGREEMENT ── */
-  .agreement-score { font-size:34px; font-weight:700; color:var(--green); margin-bottom:8px; font-family:var(--mono); }
-  .agreement-list { list-style:none; }
-  .agreement-list li { font-size:12px; color:var(--text); padding:5px 0 5px 18px; position:relative; line-height:1.5; border-bottom:1px solid var(--border); }
-  .agreement-list li:last-child { border-bottom:none; }
-  .agreement-list li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:600; }
-  .agreement-list li.flag::before { content:'!'; color:var(--amber); }
-  .agreement-list li.flag { color:var(--amber); }
+/* CONFIDENCE MATH */
+.contrib-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);}
+.contrib-row:last-child{border:none;}
+.contrib-name{flex:1;font-size:12px;color:var(--text);}
+.contrib-bar-wrap{width:70px;height:4px;background:var(--border);border-radius:2px;}
+.contrib-bar-fill{height:100%;border-radius:2px;}
+.contrib-pct{font-size:12px;font-weight:600;width:34px;text-align:right;}
 
-  /* ── GRAZING BREAKDOWN ── */
-  .breakdown-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border); font-size:12px; }
-  .breakdown-row:last-child { border-bottom:none; }
-  .breakdown-pts { font-weight:700; }
-  .breakdown-pts.pos { color:var(--green); }
-  .breakdown-pts.neg { color:var(--red); }
-  .breakdown-pts.zero { color:var(--muted); }
+/* CONF PANELS */
+.conf-panel{margin:8px 0;padding:10px 12px;border-radius:8px;font-size:12px;}
+.conf-panel.reduced{background:#fffbeb;border:1px solid #fde68a;}
+.conf-panel.boosted{background:#f0fdf4;border:1px solid #86efac;}
+.conf-panel-title{font-weight:600;margin-bottom:4px;}
+.conf-panel.reduced .conf-panel-title{color:#92400e;}
+.conf-panel.boosted .conf-panel-title{color:#166534;}
+.conf-panel-item{padding:2px 0;}
+.conf-panel.reduced .conf-panel-item{color:#78350f;}
+.conf-panel.boosted .conf-panel-item{color:#15803d;}
 
-  /* ── FRESHNESS ── */
-  .freshness-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .fresh-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
-  .fresh-sensor { font-size:12px; font-weight:600; color:var(--text); }
-  .fresh-age { font-size:11px; display:flex; align-items:center; gap:5px; }
+/* DATA RELIABILITY */
+.reliability-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.reliability-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;}
+.reliability-label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px;}
+.reliability-value{font-size:20px;font-weight:700;color:var(--green);}
+.reliability-value.warn{color:var(--amber);}
 
-  /* ── EXPLAINABILITY ── */
-  .explain-item { margin-bottom:14px; }
-  .explain-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
-  .explain-because { list-style:none; }
-  .explain-because li { font-size:12px; color:var(--muted); padding:4px 0 4px 14px; position:relative; line-height:1.5; border-bottom:1px solid var(--border); }
-  .explain-because li:last-child { border-bottom:none; }
-  .explain-because li::before { content:'—'; position:absolute; left:0; color:var(--border); }
+/* BREAKDOWN */
+.breakdown-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.breakdown-row:last-child{border:none;}
+.pts-pos{color:var(--green);font-weight:700;}
+.pts-neg{color:var(--red);font-weight:700;}
+.pts-zero{color:var(--muted);font-weight:700;}
 
-  /* ── TILLAGE ── */
-  .tillage-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
-  .tillage-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; }
-  .tillage-label { font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:600; letter-spacing:0.08em; margin-bottom:6px; }
-  .tillage-value { font-size:16px; font-weight:700; color:var(--text); margin-bottom:3px; }
-  .tillage-sub { font-size:11px; color:var(--muted); }
-  .tillage-note { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:12px; }
-  .tillage-warn { color:var(--amber); font-size:11px; margin-top:6px; }
+/* TILLAGE */
+.tillage-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.tillage-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;}
 
-  /* ── ERROR ── */
-  .error-box { display:flex; align-items:center; gap:12px; background:var(--red-lt); border:1px solid #fca5a5; border-radius:10px; padding:16px 20px; margin:20px; font-size:14px; color:var(--red); }
+/* ERROR */
+.error-box{display:flex;align-items:center;gap:12px;background:var(--red-lt);border:1px solid #fca5a5;border-radius:10px;padding:14px 18px;margin:16px;font-size:13px;color:var(--red);}
 
-  /* ── MAP ── */
-  .leaflet-container { background:#e8f4ea; }
-  .pulse-marker { width:14px; height:14px; background:var(--green); border:3px solid #fff; border-radius:50%; box-shadow:0 0 0 3px var(--green), 0 2px 8px rgba(22,163,74,0.4); }
+/* MOISTURE TREND */
+.trend-value{font-size:22px;font-weight:700;margin-bottom:4px;}
+.trend-meta{font-size:11px;color:var(--muted);}
 
-  /* ── MOBILE ── */
-  @media (max-width: 768px) {
-    body { overflow:auto; height:auto; }
-    #map { height:25vh !important; }
-    #panel { overflow:visible; padding-bottom:60px; }
-    .profile { grid-template-columns:1fr; }
-    .section { border-right:none; padding:14px 16px; }
-    .tagline { display:none; }
-    .topbar { padding:8px 12px; gap:8px; height:auto; }
-    .coord-input { font-size:13px; padding:8px 12px; }
-    .decision-grid { grid-template-columns:1fr 1fr 1fr; }
-    .sensor-grid { grid-template-columns:1fr 1fr; }
-    .freshness-grid { grid-template-columns:1fr; }
-    .conf-score { font-size:38px; }
-  }
-  @media (max-width: 400px) {
-    .decision-grid { grid-template-columns:1fr; }
-    .sensor-grid { grid-template-columns:1fr; }
-    .tillage-grid { grid-template-columns:1fr; }
-  }
+/* FRESHNESS LEGEND */
+.fresh-legend{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:10px;}
+
+/* MOBILE */
+@media(max-width:768px){
+  body{overflow:auto;height:auto;}
+  #map{height:28vh !important;}
+  #panel{overflow:visible;}
+  .two-col{grid-template-columns:1fr;}
+  .two-col .section{border-right:none;}
+  .tagline{display:none;}
+  .decision-grid{grid-template-columns:1fr 1fr 1fr;}
+  .conf-score{font-size:40px;}
+}
+@media(max-width:400px){
+  .decision-grid{grid-template-columns:1fr;}
+  .tillage-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -215,9 +212,17 @@
 
 <div class="main">
   <div id="map"></div>
+
+  <div class="tabs" id="tabs" style="display:none">
+    <div class="tab active" onclick="showTab('overview')">📋 Overview</div>
+    <div class="tab" onclick="showTab('sensors')">🛰 Sensors</div>
+    <div class="tab" onclick="showTab('confidence')">🧮 Confidence</div>
+    <div class="tab" onclick="showTab('quality')">📊 Quality</div>
+  </div>
+
   <div id="panel">
     <div class="idle">
-      <div class="idle-icon">🛰</div>
+      <div style="font-size:36px">🛰</div>
       <h3>Click any field in Ireland</h3>
       <p>Or enter coordinates above to get a live satellite field report.</p>
     </div>
@@ -226,416 +231,480 @@
 
 <script>
 const API_URL = 'https://cube-earth.onrender.com';
+let currentData = null;
 
 // ── MAP ──
-const map = L.map('map', {zoomControl:false}).setView([53.5, -8.0], 7);
-const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution:'Esri', maxZoom:19});
-const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19});
+const map = L.map('map',{zoomControl:false}).setView([53.5,-8.0],7);
+const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Esri',maxZoom:19});
+const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19});
 satellite.addTo(map);
-L.control.layers({'🛰 Satellite':satellite, '🗺 Streets':streets}, {}, {position:'topright'}).addTo(map);
+L.control.layers({'🛰 Satellite':satellite,'🗺 Streets':streets},{},{position:'topright'}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);
 
-let marker = null;
-const icon = L.divIcon({className:'', html:'<div class="pulse-marker"></div>', iconSize:[14,14], iconAnchor:[7,7]});
+let marker=null;
+const icon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#16a34a;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #16a34a"></div>',iconSize:[14,14],iconAnchor:[7,7]});
 
-map.on('click', e => {
-  const {lat, lng} = e.latlng;
-  document.getElementById('coord-input').value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-  placeMarker(lat, lng);
-  scanField(lat, lng);
+map.on('click',e=>{
+  const{lat,lng}=e.latlng;
+  document.getElementById('coord-input').value=`${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  placeMarker(lat,lng);
+  scanField(lat,lng);
 });
 
-function placeMarker(lat, lng) {
-  if (marker) marker.remove();
-  marker = L.marker([lat,lng], {icon}).addTo(map);
-}
+function placeMarker(lat,lng){if(marker)marker.remove();marker=L.marker([lat,lng],{icon}).addTo(map);}
 
-function scanCoords() {
-  const val = document.getElementById('coord-input').value.trim();
-  const parts = val.split(',').map(s => parseFloat(s.trim()));
-  if (parts.length===2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-    placeMarker(parts[0], parts[1]);
-    map.flyTo([parts[0], parts[1]], 14);
-    scanField(parts[0], parts[1]);
+function scanCoords(){
+  const val=document.getElementById('coord-input').value.trim();
+  const parts=val.split(',').map(s=>parseFloat(s.trim()));
+  if(parts.length===2&&!isNaN(parts[0])&&!isNaN(parts[1])){
+    placeMarker(parts[0],parts[1]);
+    map.flyTo([parts[0],parts[1]],14);
+    scanField(parts[0],parts[1]);
   }
 }
 
-// ── FRESHNESS HELPERS ──
-function freshnessClass(f) {
-  if (!f) return 'no-data';
-  if (f === 'current') return 'fresh';
-  if (f === 'recent') return 'recent';
-  if (f === 'stale') return 'stale';
-  if (f === 'seasonal_context') return 'recent';
+// ── TABS ──
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  document.querySelector(`.tab[onclick="showTab('${name}')"]`).classList.add('active');
+  document.getElementById(`tab-${name}`)?.classList.add('active');
+}
+
+// ── HELPERS ──
+function freshnessClass(f){
+  if(f==='current')return 'fresh';
+  if(f==='recent'||f==='seasonal_context')return 'recent';
+  if(f==='stale')return 'stale';
   return 'no-data';
 }
-
-function freshnessDot(f) {
-  if (f === 'current') return '<span class="dot-fresh"></span>';
-  if (f === 'recent') return '<span class="dot-recent"></span>';
-  if (f === 'stale') return '<span class="dot-stale"></span>';
-  return '<span class="dot-nodata"></span>';
-}
-
-function freshnessLabel(f) {
-  if (f === 'current') return '🟢';
-  if (f === 'recent') return '🟡';
-  if (f === 'stale') return '🔴';
+function freshnessEmoji(f){
+  if(f==='current')return '🟢';
+  if(f==='recent'||f==='seasonal_context')return '🟡';
+  if(f==='stale')return '🔴';
   return '⚪';
 }
-
-// ── CONFIDENCE CLASS ──
-function confClass(score) {
-  if (score >= 8.5) return {label: 'High Confidence', css: 'high-conf'};
-  if (score >= 7.0) return {label: 'Operational', css: 'operational'};
-  if (score >= 5.0) return {label: 'Moderate', css: 'moderate'};
-  return {label: 'Limited', css: 'limited'};
+function confClass(score){
+  if(score>=8.5)return{label:'High Confidence',css:'high-conf'};
+  if(score>=7.0)return{label:'Operational',css:'operational'};
+  if(score>=5.0)return{label:'Moderate',css:'moderate'};
+  return{label:'Limited',css:'limited'};
 }
-
-// ── SCORE COLOR ──
-function scoreColor(label) {
-  if (!label) return '';
-  const l = label.toLowerCase();
-  if (l.includes('excellent')||l.includes('good')||l.includes('suitable')||l.includes('high')) return 'good';
-  if (l.includes('moderate')||l.includes('adequate')) return 'moderate';
-  if (l.includes('poor')||l.includes('unsuitable')||l.includes('stress')||l.includes('not suitable')) return 'poor';
-  return '';
+function scoreColor(label){
+  if(!label)return'';
+  const l=label.toLowerCase();
+  if(l.includes('excellent')||l.includes('good')||l.includes('suitable')||l.includes('high'))return'good';
+  if(l.includes('moderate')||l.includes('adequate'))return'moderate';
+  if(l.includes('poor')||l.includes('not suitable')||l.includes('stress'))return'poor';
+  return'';
 }
-
-// ── SAR CONSISTENCY ──
-function sarConsistencyLabel(rvi, ndvi) {
-  if (rvi === null || ndvi === null) return 'moderate vegetation condition';
-  const diff = Math.abs(rvi - ndvi);
-  if (diff < 0.15) return 'high vegetation condition';
-  if (diff < 0.25) return 'moderate vegetation condition';
-  return 'variable vegetation condition';
+function ageBarWidth(days,maxDays){return Math.max(5,100-((days||0)/maxDays*100));}
+function ageBarColor(freshness){
+  if(freshness==='current')return'#16a34a';
+  if(freshness==='recent')return'#f59e0b';
+  return'#dc2626';
+}
+function toggleSensor(id){
+  const el=document.getElementById(id);
+  const ch=document.getElementById(id+'-ch');
+  if(el){el.classList.toggle('open');ch?.classList.toggle('open');}
 }
 
 // ── SCAN ──
-async function scanField(lat, lng) {
-  showLoading();
-  try {
-    const res = await fetch(`${API_URL}/field_profile`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({lat, lng, year: new Date().getFullYear()}),
-    });
-    const data = await res.json();
-    if (data.success) renderProfile(data);
-    else showError(data.detail || 'API error');
-  } catch(err) {
-    showError('Could not reach Cube Earth API. It may be waking up — try again in 30 seconds.');
-  }
-}
-
-// ── LOADING ──
-let stepInterval = null;
-function showLoading() {
-  document.getElementById('scan-btn').disabled = true;
-  document.getElementById('panel').innerHTML = `
+let stepInterval=null;
+async function scanField(lat,lng){
+  document.getElementById('scan-btn').disabled=true;
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('panel').innerHTML=`
     <div class="loading">
       <div class="spinner"></div>
       <div class="loading-steps">
-        <span class="step active">🛰 Fetching Sentinel-2 imagery...</span>
+        <span class="step active">🛰 Fetching Sentinel-2...</span>
         <span class="step">💧 Computing soil moisture...</span>
-        <span class="step">📡 Extracting SAR backscatter...</span>
-        <span class="step">🧮 Calculating confidence score...</span>
-        <span class="step">🌱 Generating field profile...</span>
+        <span class="step">📡 Extracting SAR signal...</span>
+        <span class="step">🧮 Calculating confidence...</span>
+        <span class="step">🌱 Building field profile...</span>
       </div>
     </div>`;
-  let step = 0;
-  if (stepInterval) clearInterval(stepInterval);
-  const steps = document.querySelectorAll('.loading-steps .step');
-  stepInterval = setInterval(() => {
-    steps.forEach(s => s.classList.remove('active'));
-    step = Math.min(step + 1, steps.length - 1);
-    steps[step].classList.add('active');
-  }, 2500);
-}
+  let step=0;
+  if(stepInterval)clearInterval(stepInterval);
+  stepInterval=setInterval(()=>{
+    const steps=document.querySelectorAll('.loading-steps .step');
+    steps.forEach(s=>s.classList.remove('active'));
+    step=Math.min(step+1,steps.length-1);
+    steps[step]?.classList.add('active');
+  },2500);
 
-// ── RENDER ──
-function renderProfile(d) {
-  if (stepInterval) clearInterval(stepInterval);
-  document.getElementById('scan-btn').disabled = false;
-  const c=d.confidence, v=d.vegetation, sm=d.soil_moisture,
-        s=d.sar, a=d.agreement, e=d.explainability,
-        f=d.freshness, ag=d.agronomic, p=d.parcel, te=d.terrain;
-
-  const cc = confClass(c.score);
-  const cropIcon = ag.crop_class === 'grassland' ? '🌱' :
-                   ag.crop_class === 'tillage' ? '🌾' :
-                   ag.crop_class === 'arable' ? '🥕' : '🌿';
-
-  const sarConsistency = sarConsistencyLabel(s?.rvi, v?.ndvi);
-
-  document.getElementById('panel').innerHTML = `
-  <div class="profile">
-
-    <!-- PARCEL -->
-    <div class="section">
-      <div class="section-label">Field / Parcel</div>
-      <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label || 'Field'}</div>
-      <div class="parcel-name">${p ? p.crop||'Unknown crop' : 'No parcel matched'}</div>
-      <div class="parcel-meta">
-        ${p ? `${p.claim_area} ha &nbsp;·&nbsp; ${p.olr||''}` : ''}
-        ${te?.elevation_m ? `&nbsp;·&nbsp; ${te.elevation_m}m` : ''}
-        ${te?.terrain ? `&nbsp;·&nbsp; ${te.terrain}` : ''}
-      </div>
-      <div style="margin-top:6px">
-        ${p?.grassland ? '<span class="badge badge-green">Grassland</span>' : ''}
-        ${p?.tillage   ? '<span class="badge badge-amber">Tillage</span>'   : ''}
-        ${p?.eco       ? '<span class="badge badge-green">ECO</span>'       : ''}
-        ${p?.biss      ? '<span class="badge badge-gray">BISS</span>'       : ''}
-      </div>
-    </div>
-
-    <!-- CONFIDENCE -->
-    <div class="section">
-      <div class="section-label">Confidence Score</div>
-      <div class="conf-row">
-        <div class="conf-score">${c.score}<span>/10</span></div>
-        <div>
-          <div class="conf-class ${cc.css}">${cc.label}</div>
-          <div style="font-size:10px;background:${(c.uncertainty||[]).length===0?'#f0fdf4':(c.uncertainty||[]).length===1?'#fffbeb':'#fee2e2'};color:${(c.uncertainty||[]).length===0?'#166534':(c.uncertainty||[]).length===1?'#92400e':'#991b1b'};padding:2px 8px;border-radius:100px;font-weight:600">Uncertainty: ${(c.uncertainty||[]).length===0?'Low':(c.uncertainty||[]).length===1?'Moderate':'High'}</div>
-        </div>
-      </div>
-      <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
-      <button class="conf-toggle" onclick="toggleConf()">▼ View confidence factors</button>
-      <div class="conf-details" id="conf-details">
-        <div class="contrib-bars">
-          ${Object.entries(c.contributions).map(([k,v])=>`
-            <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
-              <div style="flex:1;font-size:12px;color:var(--text)">${k}${v.age_days?` <span style='font-size:10px;color:var(--muted)'>(${v.age_days}d)</span>`:''}</div>
-              <div style="width:70px;height:4px;background:var(--border);border-radius:2px"><div style="height:100%;border-radius:2px;background:${v.percent===0?'var(--border)':'var(--green)'};width:${Math.min(v.percent*3,100)}%"></div></div>
-              <div style="font-size:12px;font-weight:600;width:34px;text-align:right;color:${v.percent===0?'var(--muted)':'var(--text)'}">${v.percent===0?'—':v.percent.toFixed(1)+'%'}</div>
-            </div>`).join('')}
-        </div>
-        ${(c.confidence_reducers||[]).length > 0 ? `
-        <div class="conf-panel reduced">
-          <div class="conf-panel-title">Reduced by:</div>
-          ${(c.confidence_reducers||[]).map(r=>`<div class="conf-panel-item">• ${r.factor} — ${r.impact}</div>`).join('')}
-        </div>` : ''}
-        ${(c.confidence_boosters||[]).length > 0 ? `
-        <div class="conf-panel boosted">
-          <div class="conf-panel-title">Strengthened by:</div>
-          ${(c.confidence_boosters||[]).map(b=>`<div class="conf-panel-item">✓ ${b.factor} — ${b.impact}</div>`).join('')}
-        </div>` : ''}
-      </div>
-    </div>
-
-    <!-- LIVE SENSORS -->
-    <div class="section">
-      <div class="section-label">Live Sensor Readings</div>
-      <div class="sensor-grid">
-        <div class="sensor-card ${freshnessClass(f?.sentinel2?.freshness)}">
-          <div class="sensor-name">Sentinel-2 Optical</div>
-          <div class="sensor-value">${v?.ndvi?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">NDVI &nbsp;·&nbsp; ${v?.ndvi_status||'No data'}</div>
-          <div class="sensor-age">${freshnessDot(f?.sentinel2?.freshness)}<span style="color:var(--muted)">${f?.sentinel2?.age_label||'unknown'}</span></div>
-        </div>
-        <div class="sensor-card ${freshnessClass(f?.smap?.freshness)}">
-          <div class="sensor-name">SMAP L4 Moisture</div>
-          <div class="sensor-value">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">m³/m³ surface</div>
-          <div class="sensor-age">${freshnessDot(f?.smap?.freshness)}<span style="color:var(--muted)">${f?.smap?.age_label||'unknown'}</span></div>
-        </div>
-        <div class="sensor-card ${s?.available ? freshnessClass(f?.sentinel1?.freshness) : 'no-data'}">
-          <div class="sensor-name">Sentinel-1 SAR</div>
-          <div class="sensor-value">${s?.rvi?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">RVI &nbsp;·&nbsp; ${s?.rvi_interpretation||'No data'}</div>
-          <div class="sensor-age">${freshnessDot(f?.sentinel1?.freshness)}<span style="color:var(--muted)">${f?.sentinel1?.age_label||'unknown'} &nbsp;·&nbsp; ${s?.acquisitions||0} passes</span></div>
-        </div>
-        <div class="sensor-card recent">
-          <div class="sensor-name">ERA5 Trend</div>
-          <div class="sensor-value">${sm?.era5?.surface_mean?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">m³/m³ seasonal</div>
-          <div class="sensor-age">${freshnessDot('recent')}<span style="color:var(--muted)">Seasonal context</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FIELD DECISIONS -->
-    <div class="section">
-      <div class="section-label">Field Decisions Today</div>
-      ${ag.crop_class === 'tillage' || ag.crop_class === 'arable' ? `
-      <div class="tillage-grid">
-        <div class="tillage-card">
-          <div class="tillage-label">🌾 Crop Canopy</div>
-          <div class="tillage-value ${scoreColor(ag.tillage_intelligence?.crop_condition?.label)}">${ag.tillage_intelligence?.crop_condition?.label||'—'}</div>
-          <div class="tillage-sub">NDVI ${ag.tillage_intelligence?.crop_condition?.ndvi||'—'}</div>
-        </div>
-        <div class="tillage-card">
-          <div class="tillage-label">💧 Soil Moisture</div>
-          <div class="tillage-value ${scoreColor(ag.tillage_intelligence?.moisture_condition?.label)}">${ag.tillage_intelligence?.moisture_condition?.label||'—'}</div>
-          <div class="tillage-sub">${ag.tillage_intelligence?.moisture_condition?.surface_m3||'—'} m³/m³</div>
-        </div>
-      </div>
-      <div class="tillage-note">
-        <div style="font-weight:600;font-size:12px;margin-bottom:4px">🚜 Machinery</div>
-        <div style="font-size:12px;color:var(--muted)">${ag.tillage_intelligence?.machinery_note||'—'}</div>
-        ${ag.tillage_intelligence?.crop_condition?.age_note ? `<div class="tillage-warn">⚠ ${ag.tillage_intelligence.crop_condition.age_note}</div>` : ''}
-      </div>
-      ` : `
-      <div class="decision-grid">
-        <div class="decision-card">
-          <div class="decision-emoji">🐄</div>
-          <div class="decision-label">Grazing</div>
-          <div class="decision-value ${scoreColor(ag.grazing_suitability?.label)}">${ag.grazing_suitability?.label||'—'}</div>
-          ${ag.grazing_suitability?.score !== undefined ? `<div class="decision-sub">${ag.grazing_suitability.score}/${ag.grazing_suitability.max_score||8}</div>` : ''}
-        </div>
-        <div class="decision-card">
-          <div class="decision-emoji">🚜</div>
-          <div class="decision-label">Machinery</div>
-          <div class="decision-value ${scoreColor(ag.machinery_trafficability?.label)}">${ag.machinery_trafficability?.label||'—'}</div>
-        </div>
-        <div class="decision-card">
-          <div class="decision-emoji">💧</div>
-          <div class="decision-label">Slurry</div>
-          <div class="decision-value ${scoreColor(ag.slurry_spreading?.suitable)}">${ag.slurry_spreading?.suitable||'—'}</div>
-        </div>
-      </div>
-      ${ag.grazing_suitability?.breakdown ? `
-      <div style="margin-top:12px">
-        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Grazing score breakdown</div>
-        ${Object.entries(ag.grazing_suitability.breakdown).map(([k,v])=>`
-          <div class="breakdown-row">
-            <span style="font-size:12px;color:var(--muted)">${v.reason}</span>
-            <span class="breakdown-pts ${v.points>0?'pos':v.points<0?'neg':'zero'}">${v.points>0?'+':''}${v.points}</span>
-          </div>`).join('')}
-      </div>` : ''}
-      `}
-    </div>
-
-    <!-- AGREEMENT -->
-    <div class="section">
-      <div class="section-label">Cross-sensor Agreement</div>
-      <div class="agreement-score">${a.score}<span style="font-size:16px;color:var(--muted);font-family:var(--sans)">/10</span></div>
-      <ul class="agreement-list">
-        ${(a.agreements||[]).map(t=>`<li>${t.replace('both independently support moderate vegetation condition', sarConsistency).replace('both independently support moderate vegetation condition', sarConsistency)}</li>`).join('')}
-        ${(a.flags||[]).map(t=>`<li class="flag">${t}</li>`).join('')}
-      </ul>
-    </div>
-
-    <!-- MOISTURE TREND -->
-    <div class="section">
-      <div class="section-label">Moisture Trend</div>
-      <div id="moisture-trend-content">
-        ${(()=>{
-          const smap = sm?.smap?.sm_surface_m3;
-          const era5 = sm?.era5?.surface_mean;
-          if (!smap || !era5) return '<div style="font-size:12px;color:var(--muted)">Insufficient data</div>';
-          const diff = smap - era5;
-          const arrow = diff > 0.05 ? "\u2191" : diff < -0.05 ? "\u2193" : "\u2192";
-          const label = diff > 0.05 ? "Wetter than seasonal average" : diff < -0.05 ? "Drier than seasonal average" : "Near seasonal average";
-          const col = diff > 0.05 ? "#1d4ed8" : diff < -0.05 ? "#d97706" : "#16a34a";
-          return `<div style="font-size:22px;font-weight:700;color:${col};margin-bottom:4px">${arrow} ${label}</div><div style="font-size:12px;color:var(--muted)">SMAP ${smap.toFixed(3)} vs ERA5 ${era5.toFixed(3)} m\u00b3/m\u00b3 (diff ${diff>=0?'+':''}${diff.toFixed(3)})</div><div style="font-size:11px;color:var(--muted);margin-top:4px">SMAP = current observation \u00b7 ERA5 = seasonal baseline</div>`;
-        })()}
-      </div>
-    </div>
-
-    <!-- FRESHNESS -->
-    <div class="section">
-      <div class="section-label">Data Freshness</div>
-      <div style="display:flex;gap:12px;margin-bottom:10px;font-size:11px;color:var(--muted)">
-        <span>🟢 &lt;3d</span><span>🟡 3–14d</span><span>🔴 &gt;14d</span><span>⚪ N/A</span>
-      </div>
-      <div class="freshness-grid">
-        ${Object.entries(f||{}).map(([k,v])=>`
-          <div class="fresh-item">
-            <span class="fresh-sensor">${v.sensor?.split(' ')[0]||k}</span>
-            <span class="fresh-age">${freshnessLabel(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <!-- DATA QUALITY -->
-    <div class="section">
-      <div class="section-label">Data Quality</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Freshness</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)">${(()=>{const ages=[f?.sentinel2?.age_days,f?.smap?.age_days,f?.sentinel1?.age_days].filter(x=>x!=null);if(!ages.length)return'5.0';const avg=ages.reduce((a,b)=>a+b,0)/ages.length;return avg<3?'9.5':avg<7?'8.5':avg<14?'7.0':'5.5';})()}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Agreement</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Coverage</div>
-          <div style="font-size:14px;font-weight:700;color:${d?.thermal?.available?'var(--green)':'var(--amber)'}"> ${d?.thermal?.available?'Full':'Partial'}</div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Evidence</div>
-          <div style="font-size:14px;font-weight:700;color:${a.score>=9?'var(--green)':a.score>=7?'var(--amber)':'var(--red)'}"> ${a.score>=9?'Strong':a.score>=7?'Moderate':'Weak'}</div>
-        </div>
-      </div>
-      ${!d?.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">\u26a0 Missing: Thermal layer (ECOSTRESS) — limited by Atlantic cloud cover</div>':''}
-    </div>
-
-    <!-- DATA QUALITY -->
-    <div class="section">
-      <div class="section-label">Data Quality</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Freshness</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)">${(()=>{const ages=[f?.sentinel2?.age_days,f?.smap?.age_days,f?.sentinel1?.age_days].filter(x=>x!=null);if(!ages.length)return"5.0";const avg=ages.reduce((a,b)=>a+b,0)/ages.length;return avg<3?"9.5":avg<7?"8.5":avg<14?"7.0":"5.5";})()}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Agreement</div>
-          <div style="font-size:20px;font-weight:700;color:var(--green)">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Coverage</div>
-          <div style="font-size:14px;font-weight:700;color:${d?.thermal?.available?"var(--green)":"var(--amber)"}"> ${d?.thermal?.available?"Full":"Partial"}</div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">Evidence</div>
-          <div style="font-size:14px;font-weight:700;color:${a.score>=9?"var(--green)":a.score>=7?"var(--amber)":"var(--red)"}"> ${a.score>=9?"Strong":a.score>=7?"Moderate":"Weak"}</div>
-        </div>
-      </div>
-      ${!d?.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">&#9888; Missing: Thermal layer (ECOSTRESS)</div>':""}
-    </div>
-
-    <!-- EXPLAINABILITY -->
-    <div class="section" style="grid-column:1/-1">
-      <div class="section-label">Why These Scores</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
-        ${Object.entries(e||{}).filter(([k,v])=>v!==null).map(([k,v])=>`
-          <div class="explain-item">
-            <div class="explain-title">
-              ${k.charAt(0).toUpperCase()+k.slice(1)}
-              <span style="font-size:12px;font-weight:400;color:var(--muted)">→ ${v?.label||''}</span>
-            </div>
-            <ul class="explain-because">
-              ${(v?.because||[]).map(b=>`<li>${b}</li>`).join('')}
-            </ul>
-          </div>`).join('')}
-      </div>
-    </div>
-
-  </div>`;
-}
-
-function toggleConf() {
-  const d = document.getElementById('conf-details');
-  const btn = document.querySelector('.conf-toggle');
-  if (d.classList.contains('open')) {
-    d.classList.remove('open');
-    btn.textContent = '▼ View confidence factors';
-  } else {
-    d.classList.add('open');
-    btn.textContent = '▲ Hide confidence factors';
+  try{
+    const res=await fetch(`${API_URL}/field_profile`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({lat,lng,year:new Date().getFullYear()}),
+    });
+    const data=await res.json();
+    if(data.success)renderProfile(data);
+    else showError(data.detail||'API error');
+  }catch(err){
+    showError('Could not reach Cube Earth API — try again in 30 seconds.');
   }
 }
 
-function showError(msg) {
-  if (stepInterval) clearInterval(stepInterval);
-  document.getElementById('scan-btn').disabled = false;
-  document.getElementById('panel').innerHTML = `
-    <div class="error-box">
-      <span style="font-size:20px">⚠</span>
-      <span>${msg}</span>
-    </div>`;
+// ── RENDER ──
+function renderProfile(d){
+  if(stepInterval)clearInterval(stepInterval);
+  document.getElementById('scan-btn').disabled=false;
+  currentData=d;
+
+  const c=d.confidence,v=d.vegetation,sm=d.soil_moisture,
+        s=d.sar,a=d.agreement,e=d.explainability,
+        f=d.freshness,ag=d.agronomic,p=d.parcel,te=d.terrain;
+
+  const cc=confClass(c.score);
+  const cropIcon=ag.crop_class==='grassland'?'🌱':ag.crop_class==='tillage'?'🌾':ag.crop_class==='arable'?'🥕':'🌿';
+  const uncertaintyCount=(c.uncertainty||[]).length;
+  const uncLabel=uncertaintyCount===0?'Low':uncertaintyCount===1?'Moderate':'High';
+  const uncColor=uncertaintyCount===0?{bg:'#f0fdf4',txt:'#166534'}:uncertaintyCount===1?{bg:'#fffbeb',txt:'#92400e'}:{bg:'#fee2e2',txt:'#991b1b'};
+
+  // Moisture trend
+  const smap_val=sm?.smap?.sm_surface_m3;
+  const era5_val=sm?.era5?.surface_mean;
+  let trendHtml='<div style="font-size:12px;color:var(--muted)">Insufficient data</div>';
+  if(smap_val&&era5_val){
+    const diff=smap_val-era5_val;
+    const arrow=diff>0.05?'↑':diff<-0.05?'↓':'→';
+    const label=diff>0.05?'Wetter than seasonal average':diff<-0.05?'Drier than seasonal average':'Near seasonal average';
+    const col=diff>0.05?'#1d4ed8':diff<-0.05?'#d97706':'#16a34a';
+    trendHtml=`<div class="trend-value" style="color:${col}">${arrow} ${label}</div>
+    <div class="trend-meta">SMAP ${smap_val.toFixed(3)} vs ERA5 ${era5_val.toFixed(3)} m³/m³ (diff ${diff>=0?'+':''}${diff.toFixed(3)})</div>
+    <div class="trend-meta" style="margin-top:3px">SMAP = current · ERA5 = seasonal baseline</div>`;
+  }
+
+  // Freshness score
+  const fAges=[f?.sentinel2?.age_days,f?.smap?.age_days,f?.sentinel1?.age_days].filter(x=>x!=null);
+  const fAvg=fAges.length?fAges.reduce((a,b)=>a+b,0)/fAges.length:30;
+  const fScore=fAvg<3?'9.5':fAvg<7?'8.5':fAvg<14?'7.0':'5.5';
+
+  // ── TAB: OVERVIEW ──
+  const overviewHtml=`
+  <div class="section">
+    <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label||'Field'}</div>
+    <div class="parcel-name">${p?p.crop||'Unknown crop':'No parcel matched'}</div>
+    <div class="parcel-meta">${p?`${p.claim_area} ha · ${p.olr||''}`:''} ${te?.elevation_m?`· ${te.elevation_m}m`:''} ${te?.terrain?`· ${te.terrain}`:''}</div>
+    <div style="margin-top:6px">
+      ${p?.grassland?'<span class="badge badge-green">Grassland</span>':''}
+      ${p?.tillage?'<span class="badge badge-amber">Tillage</span>':''}
+      ${p?.eco?'<span class="badge badge-green">ECO</span>':''}
+      ${p?.biss?'<span class="badge badge-gray">BISS</span>':''}
+    </div>
+  </div>
+
+  ${ag.crop_class==='tillage'||ag.crop_class==='arable'?`
+  <div class="section">
+    <div class="section-label">Field Decisions Today</div>
+    <div class="tillage-grid">
+      <div class="tillage-card">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px">🌾 Crop Canopy</div>
+        <div style="font-size:16px;font-weight:700" class="${scoreColor(ag.tillage_intelligence?.crop_condition?.label)}">${ag.tillage_intelligence?.crop_condition?.label||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">NDVI ${ag.tillage_intelligence?.crop_condition?.ndvi||'—'}</div>
+      </div>
+      <div class="tillage-card">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:6px">💧 Soil Moisture</div>
+        <div style="font-size:16px;font-weight:700" class="${scoreColor(ag.tillage_intelligence?.moisture_condition?.label)}">${ag.tillage_intelligence?.moisture_condition?.label||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">${ag.tillage_intelligence?.moisture_condition?.surface_m3||'—'} m³/m³</div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px">
+      <div style="font-weight:600;margin-bottom:3px">🚜 Machinery</div>
+      <div style="color:var(--muted)">${ag.tillage_intelligence?.machinery_note||'—'}</div>
+      ${ag.tillage_intelligence?.crop_condition?.age_note?`<div style="color:var(--amber);font-size:11px;margin-top:5px">⚠ ${ag.tillage_intelligence.crop_condition.age_note}</div>`:''}
+    </div>
+  </div>`:`
+  <div class="section">
+    <div class="section-label">Field Decisions Today</div>
+    <div class="decision-grid">
+      <div class="decision-card">
+        <div class="decision-emoji">🐄</div>
+        <div class="decision-label">Grazing</div>
+        <div class="decision-value ${scoreColor(ag.grazing_suitability?.label)}">${ag.grazing_suitability?.label||'—'}</div>
+        ${ag.grazing_suitability?.score!==undefined?`<div class="decision-sub">${ag.grazing_suitability.score}/${ag.grazing_suitability.max_score||8}</div>`:''}
+      </div>
+      <div class="decision-card">
+        <div class="decision-emoji">🚜</div>
+        <div class="decision-label">Machinery</div>
+        <div class="decision-value ${scoreColor(ag.machinery_trafficability?.label)}">${ag.machinery_trafficability?.label||'—'}</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-emoji">💧</div>
+        <div class="decision-label">Slurry</div>
+        <div class="decision-value ${scoreColor(ag.slurry_spreading?.suitable)}">${ag.slurry_spreading?.suitable||'—'}</div>
+      </div>
+    </div>
+    ${ag.grazing_suitability?.breakdown?`
+    <div style="margin-top:12px">
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px">Grazing score breakdown</div>
+      ${Object.entries(ag.grazing_suitability.breakdown).map(([k,v])=>`
+      <div class="breakdown-row">
+        <span style="color:var(--muted)">${v.reason}</span>
+        <span class="${v.points>0?'pts-pos':v.points<0?'pts-neg':'pts-zero'}">${v.points>0?'+':''}${v.points}</span>
+      </div>`).join('')}
+    </div>`:''}
+  </div>`}
+
+  <div class="two-col">
+    <div class="section">
+      <div class="section-label">Confidence</div>
+      <div class="conf-hero">
+        <div class="conf-score">${c.score}<span>/10</span></div>
+        <div class="conf-badges">
+          <span class="conf-class ${cc.css}">${cc.label}</span>
+          <span class="uncertainty-badge" style="background:${uncColor.bg};color:${uncColor.txt}">Uncertainty: ${uncLabel}</span>
+        </div>
+      </div>
+      <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
+    </div>
+    <div class="section">
+      <div class="section-label">Agreement</div>
+      <div class="agreement-score">${a.score}<span style="font-size:14px;color:var(--muted);font-family:var(--sans)">/10</span></div>
+      <div style="font-size:12px;color:var(--muted)">${a.level==='high'?'Strong cross-sensor consistency':'Cross-sensor signals evaluated'}</div>
+      ${(a.flags||[]).length>0?`<div style="margin-top:6px;font-size:11px;color:var(--amber)">! ${a.flags[0]}</div>`:''}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Key Readings</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.sentinel2?.freshness)==='fresh'?'var(--green)':freshnessClass(f?.sentinel2?.freshness)==='recent'?'#f59e0b':'var(--red)'}">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">NDVI ${freshnessEmoji(f?.sentinel2?.freshness)} ${f?.sentinel2?.age_label||''}</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">${v?.ndvi_status||''}</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.smap?.freshness)==='fresh'?'var(--green)':'#f59e0b'}">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">SMAP ${freshnessEmoji(f?.smap?.freshness)} ${f?.smap?.age_label||''}</div>
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">m³/m³ surface moisture</div>
+      </div>
+    </div>
+  </div>`;
+
+  // ── TAB: SENSORS ──
+  const sensorsHtml=`
+  <div class="section">
+    <div class="section-label">Live Sensor Readings</div>
+    <div class="fresh-legend"><span>🟢 &lt;3d fresh</span><span>🟡 3–14d recent</span><span>🔴 &gt;14d stale</span><span>⚪ N/A</span></div>
+
+    <div class="sensor-card" onclick="toggleSensor('s2-exp')">
+      <div class="sensor-header">
+        <div class="sensor-dot ${freshnessClass(f?.sentinel2?.freshness)}"></div>
+        <div class="sensor-info">
+          <div class="sensor-name-row">Sentinel-2 Optical ${freshnessEmoji(f?.sentinel2?.freshness)}</div>
+          <div class="sensor-val-row"><span class="sensor-value">${v?.ndvi?.toFixed(3)||'—'}</span><span class="sensor-unit">NDVI · ${v?.ndvi_status||''}</span></div>
+          <div class="sensor-age-row">${f?.sentinel2?.age_label||'unknown'}</div>
+        </div>
+        <div class="sensor-chevron" id="s2-exp-ch">▼</div>
+      </div>
+      <div class="sensor-age-bar"><div class="sensor-age-fill" style="background:${ageBarColor(f?.sentinel2?.freshness)};width:${ageBarWidth(f?.sentinel2?.age_days,35)}%"></div></div>
+      <div class="sensor-expand" id="s2-exp">
+        <div class="sensor-expand-row"><span>NDRE</span><span style="font-weight:600">${v?.ndre?.toFixed(3)||'—'}</span></div>
+        <div class="sensor-expand-row"><span>CIre</span><span style="font-weight:600">${v?.cire?.toFixed(3)||'—'}</span></div>
+        <div class="sensor-expand-row"><span>GCAP</span><span style="font-weight:600">${v?.gcap?.toFixed(3)||'—'}</span></div>
+        <div class="sensor-expand-row"><span>Cloud cover</span><span style="font-weight:600">${v?.cloud_cover||'0'}%</span></div>
+        <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['Sentinel-2']?.percent?.toFixed(1)||'—'}%</span></div>
+        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">HLS 30m</span></div>
+      </div>
+    </div>
+
+    <div class="sensor-card" onclick="toggleSensor('smap-exp')">
+      <div class="sensor-header">
+        <div class="sensor-dot ${freshnessClass(f?.smap?.freshness)}"></div>
+        <div class="sensor-info">
+          <div class="sensor-name-row">SMAP L4 Soil Moisture ${freshnessEmoji(f?.smap?.freshness)}</div>
+          <div class="sensor-val-row"><span class="sensor-value">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</span><span class="sensor-unit">m³/m³ surface</span></div>
+          <div class="sensor-age-row">${f?.smap?.age_label||'unknown'}</div>
+        </div>
+        <div class="sensor-chevron" id="smap-exp-ch">▼</div>
+      </div>
+      <div class="sensor-age-bar"><div class="sensor-age-fill" style="background:${ageBarColor(f?.smap?.freshness)};width:${ageBarWidth(f?.smap?.age_days,10)}%"></div></div>
+      <div class="sensor-expand" id="smap-exp">
+        <div class="sensor-expand-row"><span>Surface moisture</span><span style="font-weight:600">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'} m³/m³</span></div>
+        <div class="sensor-expand-row"><span>Rootzone moisture</span><span style="font-weight:600">${sm?.smap?.sm_rootzone_m3?.toFixed(3)||'—'} m³/m³</span></div>
+        <div class="sensor-expand-row"><span>Surface %</span><span style="font-weight:600">${sm?.smap?.sm_surface_pct?.toFixed(1)||'—'}%</span></div>
+        <div class="sensor-expand-row"><span>Resolution</span><span style="font-weight:600">9km EASE-2</span></div>
+        <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['SMAP']?.percent?.toFixed(1)||'—'}%</span></div>
+        <div class="sensor-expand-row"><span>Fused with ERA5</span><span style="font-weight:600">SMAP 60% + ERA5 40%</span></div>
+      </div>
+    </div>
+
+    <div class="sensor-card" onclick="toggleSensor('sar-exp')">
+      <div class="sensor-header">
+        <div class="sensor-dot ${s?.available?freshnessClass(f?.sentinel1?.freshness):'no-data'}"></div>
+        <div class="sensor-info">
+          <div class="sensor-name-row">Sentinel-1 SAR ${freshnessEmoji(f?.sentinel1?.freshness)}</div>
+          <div class="sensor-val-row"><span class="sensor-value">${s?.rvi?.toFixed(3)||'—'}</span><span class="sensor-unit">RVI · ${s?.rvi_interpretation||'No data'}</span></div>
+          <div class="sensor-age-row">${f?.sentinel1?.age_label||'unknown'} · ${s?.acquisitions||0} passes aggregated</div>
+        </div>
+        <div class="sensor-chevron" id="sar-exp-ch">▼</div>
+      </div>
+      <div class="sensor-age-bar"><div class="sensor-age-fill" style="background:${ageBarColor(f?.sentinel1?.freshness)};width:${ageBarWidth(f?.sentinel1?.age_days,20)}%"></div></div>
+      <div class="sensor-expand" id="sar-exp">
+        <div class="sensor-expand-row"><span>VV backscatter</span><span style="font-weight:600">${s?.vv_db?.toFixed(1)||'—'} dB</span></div>
+        <div class="sensor-expand-row"><span>VH backscatter</span><span style="font-weight:600">${s?.vh_db?.toFixed(1)||'—'} dB</span></div>
+        <div class="sensor-expand-row"><span>RVI</span><span style="font-weight:600">${s?.rvi?.toFixed(3)||'—'}</span></div>
+        <div class="sensor-expand-row"><span>Acquisitions averaged</span><span style="font-weight:600">${s?.acquisitions||0}</span></div>
+        <div class="sensor-expand-row"><span>Calibration</span><span style="font-weight:600">SIGMA0 terrain corrected</span></div>
+        <div class="sensor-expand-row"><span>Speckle filter</span><span style="font-weight:600">LEE 5×5</span></div>
+        <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['Sentinel-1']?.percent?.toFixed(1)||'—'}%</span></div>
+      </div>
+    </div>
+
+    <div class="sensor-card" onclick="toggleSensor('era5-exp')">
+      <div class="sensor-header">
+        <div class="sensor-dot recent"></div>
+        <div class="sensor-info">
+          <div class="sensor-name-row">ERA5-Land Reanalysis 🟡</div>
+          <div class="sensor-val-row"><span class="sensor-value">${sm?.era5?.surface_mean?.toFixed(3)||'—'}</span><span class="sensor-unit">m³/m³ seasonal</span></div>
+          <div class="sensor-age-row">Seasonal context</div>
+        </div>
+        <div class="sensor-chevron" id="era5-exp-ch">▼</div>
+      </div>
+      <div class="sensor-age-bar"><div class="sensor-age-fill" style="background:#f59e0b;width:70%"></div></div>
+      <div class="sensor-expand" id="era5-exp">
+        <div class="sensor-expand-row"><span>Surface mean</span><span style="font-weight:600">${sm?.era5?.surface_mean?.toFixed(3)||'—'} m³/m³</span></div>
+        <div class="sensor-expand-row"><span>Rootzone mean</span><span style="font-weight:600">${sm?.era5?.rootzone_mean?.toFixed(3)||'—'} m³/m³</span></div>
+        <div class="sensor-expand-row"><span>Rainfall (season)</span><span style="font-weight:600">${sm?.era5?.rainfall_mm?.toFixed(0)||'—'} mm</span></div>
+        <div class="sensor-expand-row"><span>ET₀ (season)</span><span style="font-weight:600">${sm?.era5?.et0_mm?.toFixed(0)||'—'} mm</span></div>
+        <div class="sensor-expand-row"><span>Resolution</span><span style="font-weight:600">9km ERA5-Land</span></div>
+        <div class="sensor-expand-row"><span>Note</span><span style="font-weight:600">Model reanalysis — seasonal trend</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section">
+    <div class="section-label">Moisture Trend</div>
+    ${trendHtml}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Why These Scores</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px">
+      ${Object.entries(e||{}).filter(([k,v])=>v!==null).map(([k,v])=>`
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${k.charAt(0).toUpperCase()+k.slice(1)} <span style="font-size:12px;font-weight:400;color:var(--muted)">→ ${v?.label||''}</span></div>
+        <ul style="list-style:none">
+          ${(v?.because||[]).map(b=>`<li style="font-size:12px;color:var(--muted);padding:4px 0 4px 14px;position:relative;border-bottom:1px solid var(--border)"><span style="position:absolute;left:0;color:var(--border)">—</span>${b}</li>`).join('')}
+        </ul>
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  // ── TAB: CONFIDENCE ──
+  const confidenceHtml=`
+  <div class="section">
+    <div class="section-label">Confidence Score</div>
+    <div class="conf-hero">
+      <div class="conf-score">${c.score}<span>/10</span></div>
+      <div class="conf-badges">
+        <span class="conf-class ${cc.css}">${cc.label}</span>
+        <span class="uncertainty-badge" style="background:${uncColor.bg};color:${uncColor.txt}">Uncertainty: ${uncLabel}</span>
+      </div>
+    </div>
+    <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Confidence Contributors</div>
+    ${Object.entries(c.contributions).map(([k,v])=>`
+    <div class="contrib-row">
+      <div class="contrib-name">${k}${v.age_days?` <span style="font-size:10px;color:var(--muted)">(${v.age_days}d)</span>`:''}</div>
+      <div class="contrib-bar-wrap"><div class="contrib-bar-fill" style="background:${v.percent===0?'var(--border)':'var(--green)'};width:${Math.min(v.percent*3,100)}%"></div></div>
+      <div class="contrib-pct" style="color:${v.percent===0?'var(--muted)':'var(--text)'}">${v.percent===0?'—':v.percent.toFixed(1)+'%'}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Cross-sensor Agreement</div>
+    <div class="agreement-score">${a.score}<span style="font-size:14px;color:var(--muted);font-family:var(--sans)">/10</span></div>
+    <ul class="agreement-list">
+      ${(a.agreements||[]).map(t=>`<li>${t}</li>`).join('')}
+      ${(a.flags||[]).map(t=>`<li class="flag">${t}</li>`).join('')}
+    </ul>
+  </div>
+
+  ${(c.confidence_reducers||[]).length>0?`
+  <div class="section">
+    <div class="conf-panel reduced">
+      <div class="conf-panel-title">Reduced by:</div>
+      ${(c.confidence_reducers||[]).map(r=>`<div class="conf-panel-item">• ${r.factor} — ${r.impact}</div>`).join('')}
+    </div>
+    <div class="conf-panel boosted">
+      <div class="conf-panel-title">Strengthened by:</div>
+      ${(c.confidence_boosters||[]).map(b=>`<div class="conf-panel-item">✓ ${b.factor} — ${b.impact}</div>`).join('')}
+    </div>
+  </div>`:''}`;
+
+  // ── TAB: QUALITY ──
+  const qualityHtml=`
+  <div class="section">
+    <div class="section-label">Data Reliability</div>
+    <div class="reliability-grid">
+      <div class="reliability-card">
+        <div class="reliability-label">Freshness</div>
+        <div class="reliability-value">${fScore}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+      </div>
+      <div class="reliability-card">
+        <div class="reliability-label">Agreement</div>
+        <div class="reliability-value">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
+      </div>
+      <div class="reliability-card">
+        <div class="reliability-label">Coverage</div>
+        <div class="reliability-value ${d.thermal?.available?'':'warn'}">${d.thermal?.available?'Full':'Partial'}</div>
+      </div>
+      <div class="reliability-card">
+        <div class="reliability-label">Evidence</div>
+        <div class="reliability-value ${a.score>=9?'':'warn'}">${a.score>=9?'Strong':a.score>=7?'Moderate':'Weak'}</div>
+      </div>
+    </div>
+    ${!d.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:8px 10px;background:var(--amber-lt);border-radius:6px">⚠ Missing dimension: ECOSTRESS thermal — limited by Atlantic cloud cover</div>':''}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Data Freshness</div>
+    <div class="fresh-legend"><span>🟢 &lt;3d</span><span>🟡 3–14d</span><span>🔴 &gt;14d</span><span>⚪ N/A</span></div>
+    ${Object.entries(f||{}).map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
+      <span style="font-weight:600">${v.sensor||k}</span>
+      <span>${freshnessEmoji(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
+    </div>`).join('')}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Moisture Trend</div>
+    ${trendHtml}
+  </div>
+
+  <div class="section">
+    <div class="section-label">Field History</div>
+    <div style="text-align:center;padding:20px;color:var(--muted)">
+      <div style="font-size:24px;margin-bottom:8px">📈</div>
+      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">7-day trend</div>
+      <div style="font-size:12px">Coming soon — historical NDVI and moisture trends</div>
+    </div>
+  </div>`;
+
+  // ── BUILD PANEL ──
+  document.getElementById('panel').innerHTML=`
+    <div class="tab-content active" id="tab-overview">${overviewHtml}</div>
+    <div class="tab-content" id="tab-sensors">${sensorsHtml}</div>
+    <div class="tab-content" id="tab-confidence">${confidenceHtml}</div>
+    <div class="tab-content" id="tab-quality">${qualityHtml}</div>`;
+
+  document.getElementById('tabs').style.display='flex';
+}
+
+function showError(msg){
+  if(stepInterval)clearInterval(stepInterval);
+  document.getElementById('scan-btn').disabled=false;
+  document.getElementById('tabs').style.display='none';
+  document.getElementById('panel').innerHTML=`<div class="error-box"><span style="font-size:20px">⚠</span><span>${msg}</span></div>`;
 }
 </script>
 <script data-goatcounter="https://cube-earth.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
