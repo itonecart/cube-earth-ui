@@ -420,8 +420,8 @@ function renderProfile(d){
   <div class="section">
     <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label||'Field'}</div>
     <div class="parcel-name">${p?p.crop||'Unknown crop':'<span style="color:var(--amber)">⚠ No parcel in database</span>'}</div>
-    ${!p?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Satellite sensors still operational — confidence reflects sensor data only</div>':''}
-    ${!p?'<div style="font-size:11px;color:var(--muted);margin-top:2px">Satellite sensors still operational — confidence reflects sensor data only</div>':''}
+
+
     <div class="parcel-meta">${p?`${p.claim_area} ha · ${p.olr||''}`:''} ${te?.elevation_m?`· ${te.elevation_m}m`:''} ${te?.terrain?`· ${te.terrain}`:''}</div>
     <div style="margin-top:6px">
       ${p?.grassland?'<span class="badge badge-green">Grassland</span>':''}
