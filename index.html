@@ -437,7 +437,7 @@ function renderProfile(d){
       const col=qual==='exact'?'var(--green)':qual==='close'?'var(--green)':qual==='nearby'?'var(--amber)':'var(--red)';
       const bg=qual==='exact'?'var(--green-lt)':qual==='close'?'var(--green-lt)':qual==='nearby'?'var(--amber-lt)':'var(--red-lt)';
       const label=qual==='exact'?'Exact match':qual==='close'?`Close match (${dist}m)`:qual==='nearby'?`Nearby match (${dist}m)`:`Distant match (${dist}m) — may reflect different field`;
-      return `<div style="margin-top:8px;padding:6px 10px;background:${bg};border-radius:6px;font-size:11px;font-weight:600;color:${col}">${icon} Parcel match: ${label}</div>`;
+      return `<div style="margin-top:8px;padding:5px 10px;background:${bg};border-radius:6px;font-size:11px;font-weight:600;color:${col}">${icon} ${dist>500?"Parcel "+dist+"m away — results may reflect nearby field":dist>200?"Parcel "+dist+"m away — minor offset":"Parcel matched ("+dist+"m)"}</div>`;
     })()}
   </div>
 
@@ -522,7 +522,14 @@ function renderProfile(d){
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.sentinel2?.freshness)==='fresh'?'var(--green)':freshnessClass(f?.sentinel2?.freshness)==='recent'?'#f59e0b':'var(--red)'}">
         <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;margin-bottom:4px">NDVI ${freshnessEmoji(f?.sentinel2?.freshness)} ${f?.sentinel2?.age_label||''}</div>
         <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</div>
-        <div style="font-size:11px;color:var(--muted)">${ndviStatusLabel(v?.ndvi)}</div>
+        <div style="font-size:11px;color:var(--muted)">${(()=>{
+          const vt=d?.vegetation_trend;
+          if(vt?.available&&(vt.long_trend==='strong_decline'||vt.long_trend==='declining'))
+            return 'Canopy declining (optical stale)';
+          if(vt?.available&&(vt.long_trend==='strong_increase'||vt.long_trend==='increasing'))
+            return 'Canopy growing';
+          return ndviStatusLabel(v?.ndvi);
+        })()}</div>
         ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.trend_arrow} ${d.vegetation_trend.trend_label}</div>`:''}
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;border-top:3px solid ${freshnessClass(f?.smap?.freshness)==='fresh'?'var(--green)':'#f59e0b'}">
@@ -583,7 +590,7 @@ function renderProfile(d){
         <div class="sensor-expand-row"><span>Surface %</span><span style="font-weight:600">${sm?.smap?.sm_surface_pct?.toFixed(1)||'—'}%</span></div>
         <div class="sensor-expand-row"><span>Resolution</span><span style="font-weight:600">9km EASE-2</span></div>
         <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['SMAP']?.percent?.toFixed(1)||'—'}%</span></div>
-        <div class="sensor-expand-row"><span>Fused with ERA5</span><span style="font-weight:600">SMAP 60% + ERA5 40%</span></div>
+        <div class="sensor-expand-row"><span>Moisture fusion</span><span style="font-weight:600">SMAP 60% + ERA5 40%</span></div>
       </div>
     </div>
 
@@ -632,7 +639,7 @@ function renderProfile(d){
         <div class="sensor-expand-row"><span>Rainfall (season)</span><span style="font-weight:600">${sm?.era5?.rainfall_mm?.toFixed(0)||'—'} mm</span></div>
         <div class="sensor-expand-row"><span>ET₀ (season)</span><span style="font-weight:600">${sm?.era5?.et0_mm?.toFixed(0)||'—'} mm</span></div>
         <div class="sensor-expand-row"><span>Resolution</span><span style="font-weight:600">9km ERA5-Land</span></div>
-        <div class="sensor-expand-row"><span>Note</span><span style="font-weight:600">Model reanalysis — seasonal trend</span></div>
+        <div class="sensor-expand-row"><span>Note</span><span style="font-weight:600">ERA5 seasonal baseline — not current observation</span></div>
       </div>
     </div>
 
@@ -660,10 +667,9 @@ function renderProfile(d){
       <div style="width:100%;overflow:hidden;box-sizing:border-box;padding-right:4px">${(vt.series||[]).map(s=>{
         const w=Math.round((s.ndvi/maxNdvi)*100);
         const c=s.ndvi>0.5?'var(--green)':s.ndvi>0.3?'#f59e0b':'var(--red)';
-        const mo=s.date.substring(5,7);
-        const months={'01':'Jan','02':'Feb','03':'Mar','04':'Apr','05':'May','06':'Jun','07':'Jul','08':'Aug','09':'Sep','10':'Oct','11':'Nov','12':'Dec'};
+        const dateLabel=s.date.substring(5,10).replace('-','/');
         return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;width:100%;overflow:hidden">
-          <span style="font-size:9px;color:var(--muted);width:24px;flex-shrink:0">${months[mo]||mo}</span>
+          <span style="font-size:9px;color:var(--muted);width:36px;flex-shrink:0">${dateLabel}</span>
           <div style="flex:1;min-width:0;height:5px;background:var(--border);border-radius:2px"><div style="height:100%;width:${w}%;background:${c};border-radius:2px"></div></div>
           <span style="font-size:9px;font-family:var(--mono);color:var(--text);width:42px;text-align:right;flex-shrink:0">${s.ndvi}</span>
         </div>`;
@@ -758,7 +764,7 @@ function renderProfile(d){
     ${Object.entries(f||{}).map(([k,v])=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">
       <span style="font-weight:600">${v.sensor?.split(' ')[0]||k}</span>
-      <span>${freshnessEmoji(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
+      <span>${freshnessEmoji(v.freshness)} <span style="color:var(--muted)">${v.freshness==='seasonal_context'?'seasonal baseline':v.age_label||'—'}</span></span>
     </div>`).join('')}
   </div>
 
