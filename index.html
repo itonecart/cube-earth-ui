@@ -241,7 +241,7 @@ satellite.addTo(map);
 L.control.layers({'🛰 Satellite':satellite,'🗺 Streets':streets},{},{position:'topright'}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);
 
-let marker=null; let parcelCircle=null; let matchLine=null;
+let marker=null; let parcelCircle=null; let matchLine=null; let lastLat=null; let lastLng=null;
 const icon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#16a34a;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #16a34a"></div>',iconSize:[14,14],iconAnchor:[7,7]});
 
 map.on('click',e=>{
@@ -344,7 +344,7 @@ function toggleSensor(id){
 
 // ── SCAN ──
 let stepInterval=null;
-async function scanField(lat,lng){
+async function scanField(lat,lng){lastLat=lat;lastLng=lng;
   document.getElementById('scan-btn').disabled=true;
   document.getElementById('tabs').style.display='none';
   document.getElementById('panel').innerHTML=`
@@ -794,7 +794,7 @@ function renderProfile(d){
     if(matchLine)matchLine.remove();
     if(dist>100){
       matchLine=L.polyline(
-        [[lat,lng],[p.centroid_lat,p.centroid_lng]],
+        [[lastLat,lastLng],[p.centroid_lat,p.centroid_lng]],
         {color:'#16a34a',weight:2,dashArray:'5,5',opacity:0.7}
       ).addTo(map);
     }
