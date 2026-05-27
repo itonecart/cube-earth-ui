@@ -403,7 +403,7 @@ function renderProfile(d){
   const overviewHtml=`
   <div class="section">
     <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label||'Field'}</div>
-    <div class="parcel-name">${p?p.crop||'Unknown crop':'No parcel matched'}</div>
+    <div class="parcel-name">${p?p.crop||'Unknown crop':'<span style="color:var(--amber)">⚠ No parcel in database</span>'}</div>
     <div class="parcel-meta">${p?`${p.claim_area} ha · ${p.olr||''}`:''} ${te?.elevation_m?`· ${te.elevation_m}m`:''} ${te?.terrain?`· ${te.terrain}`:''}</div>
     <div style="margin-top:6px">
       ${p?.grassland?'<span class="badge badge-green">Grassland</span>':''}
@@ -700,23 +700,34 @@ function renderProfile(d){
 
   // ── TAB: QUALITY ──
   const qualityHtml=`
-  <div class="section" style="padding:12px 18px">
-    <div class="section-label">Data Reliability</div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
-      <span style="background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">Fresh ${fScore}/10</span>
-      <span style="background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">Agreement ${a.score}/10</span>
-      <span style="background:${d.thermal?.available?'var(--green-lt)':'var(--amber-lt)'};color:${d.thermal?.available?'var(--green)':'var(--amber)'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">${d.thermal?.available?'Full':'Partial'} Coverage</span>
-      <span style="background:${a.score>=9?'var(--green-lt)':'var(--amber-lt)'};color:${a.score>=9?'var(--green)':'var(--amber)'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">${a.score>=9?'Strong':'Moderate'} Evidence</span>
+  <div class="section" style="padding:8px 18px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:var(--muted);font-weight:600">Freshness</span>
+        <span style="font-size:13px;font-weight:700;color:var(--green)">${fScore}/10</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:var(--muted);font-weight:600">Agreement</span>
+        <span style="font-size:13px;font-weight:700;color:var(--green)">${a.score}/10</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:var(--muted);font-weight:600">Coverage</span>
+        <span style="font-size:13px;font-weight:700;color:${d.thermal?.available?'var(--green)':'var(--amber)'}">${d.thermal?.available?'Full':'Partial'}</span>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;color:var(--muted);font-weight:600">Evidence</span>
+        <span style="font-size:13px;font-weight:700;color:${a.score>=9?'var(--green)':'var(--amber)'}">${a.score>=9?'Strong':'Moderate'}</span>
+      </div>
     </div>
-    ${!d.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">⚠ ECOSTRESS thermal unavailable — Atlantic cloud cover</div>':''}
+    ${!d.thermal?.available?'<div style="font-size:10px;color:var(--amber);padding:5px 8px;background:var(--amber-lt);border-radius:5px">⚠ ECOSTRESS thermal unavailable</div>':''}
   </div>
 
   <div class="section">
     <div class="section-label">Data Freshness</div>
     <div class="fresh-legend"><span>🟢 &lt;3d</span><span>🟡 3–14d</span><span>🔴 &gt;14d</span><span>⚪ N/A</span></div>
     ${Object.entries(f||{}).map(([k,v])=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">
-      <span style="font-weight:600">${v.sensor||k}</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">
+      <span style="font-weight:600">${v.sensor?.split(' ')[0]||k}</span>
       <span>${freshnessEmoji(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
     </div>`).join('')}
   </div>
@@ -726,13 +737,7 @@ function renderProfile(d){
     ${trendHtml}
   </div>
 
-  <div class="section" style="padding:10px 18px">
-    <div style="display:flex;align-items:center;gap:8px;color:var(--muted)">
-      <span style="font-size:14px">📈</span>
-      <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em">Field History</span>
-      <span style="font-size:11px;background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:100px;margin-left:auto">Coming soon</span>
-    </div>
-  </div>`;
+`;
 
   // ── BUILD PANEL ──
   document.getElementById('panel').innerHTML=`
