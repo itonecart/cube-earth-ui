@@ -52,7 +52,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh
 .tab-content.active{display:block;}
 
 /* SECTIONS */
-.section{padding:16px 18px;border-bottom:1px solid var(--border);}
+.section{padding:16px 18px;border-bottom:1px solid var(--border);overflow-wrap:break-word;word-wrap:break-word;}
 .section-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:0;}
 .two-col .section{border-right:1px solid var(--border);}
@@ -559,7 +559,7 @@ function renderProfile(d){
         <div class="sensor-expand-row"><span>GCAP</span><span style="font-weight:600">${v?.gcap?.toFixed(3)||'—'}</span></div>
         <div class="sensor-expand-row"><span>Cloud cover</span><span style="font-weight:600">${v?.cloud_cover||'0'}%</span></div>
         <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['Sentinel-2']?.percent?.toFixed(1)||'—'}%</span></div>
-        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">HLS 30m</span></div>
+        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">HLS Sentinel-2 / Landsat 30m</span></div>
       </div>
     </div>
 
@@ -606,7 +606,7 @@ function renderProfile(d){
         <div class="sensor-expand-row"><span>VH backscatter</span><span style="font-weight:600">${s?.vh_db?.toFixed(1)||'—'} dB</span></div>
         <div class="sensor-expand-row"><span>RVI</span><span style="font-weight:600">${s?.rvi?.toFixed(3)||'—'}</span></div>
         <div class="sensor-expand-row"><span>Acquisitions averaged</span><span style="font-weight:600">${s?.acquisitions||0}</span></div>
-        <div class="sensor-expand-row"><span>Calibration</span><span style="font-weight:600">SIGMA0 terrain corrected</span></div>
+        <div class="sensor-expand-row"><span>Calibration</span><span style="font-weight:600">Sigma0 terrain corrected</span></div>
         <div class="sensor-expand-row"><span>Speckle filter</span><span style="font-weight:600">LEE 5×5</span></div>
         <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['Sentinel-1']?.percent?.toFixed(1)||'—'}%</span></div>
       </div>
@@ -644,11 +644,12 @@ function renderProfile(d){
       const vt = d?.vegetation_trend;
       if(!vt?.available) return '<div style="font-size:12px;color:var(--muted)">GEE trend unavailable</div>';
       const col = vt.long_trend==='increasing'||vt.long_trend==='strong_increase'?'var(--green)':vt.long_trend==='stable'?'var(--muted)':'var(--red)';
+      const cropClass = ag?.crop_class||'unknown';
       const causes = vt.long_trend==='strong_increase'||vt.long_trend==='increasing'
-        ? 'Spring growth · Crop establishment · Recovery'
+        ? cropClass==='grassland'?'Spring grass growth · Recovery after grazing':'Spring growth · Crop establishment · Recovery'
         : vt.long_trend==='strong_decline'||vt.long_trend==='declining'
-        ? 'Harvest · Senescence · Grazing · Cutting'
-        : 'Stable canopy · Consistent growth';
+        ? cropClass==='tillage'?'Crop maturity · Harvest transition · Senescence':'Harvest · Senescence · Grazing · Cutting'
+        : 'Stable canopy · Consistent conditions';
       const maxNdvi = Math.max(...(vt.series||[]).map(s=>s.ndvi));
       return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
         <span style="font-size:18px;font-weight:700;color:${col}">${vt.trend_arrow} ${vt.trend_label}</span>
@@ -703,7 +704,7 @@ function renderProfile(d){
   <div class="section" style="padding:10px 18px">
     <div class="section-label">Contributors — % of final score</div>
     ${Object.entries(c.contributions).map(([k,v])=>{
-      const labels={'Sentinel-2':'Optical','SMAP':'Soil moisture','ERA5':'Weather','Sentinel-1':'Radar','ECOSTRESS':'Thermal','Parcel':'Parcel','Agreement':'Agreement'};
+      const labels={'Sentinel-2':'Optical','SMAP':'Soil moisture','ERA5':'Weather','Sentinel-1':'Radar','ECOSTRESS':'Thermal unavailable','Parcel':'Parcel','Agreement':'Agreement'};
       const friendly=labels[k]||k;
       const barW=Math.min(v.percent*3,100);
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)">
@@ -722,8 +723,8 @@ function renderProfile(d){
       <span style="font-size:20px;font-weight:700;color:var(--green)">${a.score}/10</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:3px">
-      ${(a.agreements||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--text)"><span style="position:absolute;left:0;color:var(--green);font-weight:700">✓</span>${t.length>60?t.substring(0,60)+'…':t}</div>`).join('')}
-      ${(a.flags||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--amber)"><span style="position:absolute;left:0;font-weight:700">!</span>${t.length>60?t.substring(0,60)+'…':t}</div>`).join('')}
+      ${(a.agreements||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--text)"><span style="position:absolute;left:0;color:var(--green);font-weight:700">✓</span>${t}</div>`).join('')}
+      ${(a.flags||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--amber)"><span style="position:absolute;left:0;font-weight:700">!</span>${t}</div>`).join('')}
     </div>
   </div>
 
