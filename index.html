@@ -186,9 +186,9 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh
 
 /* MOBILE */
 @media(max-width:768px){
-  body{overflow:auto;height:auto;}
+  body{overflow:auto;height:auto;padding-bottom:0;}
   #map{height:28vh !important;}
-  #panel{overflow:visible;}
+  #panel{overflow:visible;padding-bottom:200px;}
   .two-col{grid-template-columns:1fr;}
   .two-col .section{border-right:none;}
   .tagline{display:none;}
@@ -241,7 +241,7 @@ satellite.addTo(map);
 L.control.layers({'🛰 Satellite':satellite,'🗺 Streets':streets},{},{position:'topright'}).addTo(map);
 L.control.zoom({position:'bottomright'}).addTo(map);
 
-let marker=null; let parcelCircle=null;
+let marker=null; let parcelCircle=null; let matchLine=null;
 const icon=L.divIcon({className:'',html:'<div style="width:14px;height:14px;background:#16a34a;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px #16a34a"></div>',iconSize:[14,14],iconAnchor:[7,7]});
 
 map.on('click',e=>{
@@ -411,6 +411,16 @@ function renderProfile(d){
       ${p?.eco?'<span class="badge badge-green">ECO</span>':''}
       ${p?.biss?'<span class="badge badge-gray">BISS</span>':''}
     </div>
+    ${(()=>{
+      const dist=d?.parcel_context?.match_distance_m;
+      const qual=d?.parcel_context?.match_quality;
+      if(!dist)return'';
+      const icon=qual==='exact'?'✓':qual==='close'?'~':'⚠';
+      const col=qual==='exact'?'var(--green)':qual==='close'?'var(--green)':qual==='nearby'?'var(--amber)':'var(--red)';
+      const bg=qual==='exact'?'var(--green-lt)':qual==='close'?'var(--green-lt)':qual==='nearby'?'var(--amber-lt)':'var(--red-lt)';
+      const label=qual==='exact'?'Exact match':qual==='close'?`Close match (${dist}m)`:qual==='nearby'?`Nearby match (${dist}m)`:`Distant match (${dist}m) — may reflect different field`;
+      return `<div style="margin-top:8px;padding:6px 10px;background:${bg};border-radius:6px;font-size:11px;font-weight:600;color:${col}">${icon} Parcel match: ${label}</div>`;
+    })()}
   </div>
 
   ${ag.crop_class==='tillage'||ag.crop_class==='arable'?`
@@ -731,6 +741,14 @@ function renderProfile(d){
   document.getElementById('tabs').style.display='flex';
   if(p?.centroid_lat&&p?.centroid_lng){
     highlightParcel(p.centroid_lat, p.centroid_lng, p.claim_area);
+    const dist=d?.parcel_context?.match_distance_m||0;
+    if(matchLine)matchLine.remove();
+    if(dist>100){
+      matchLine=L.polyline(
+        [[lat,lng],[p.centroid_lat,p.centroid_lng]],
+        {color:'#16a34a',weight:2,dashArray:'5,5',opacity:0.7}
+      ).addTo(map);
+    }
   }
 }
 
