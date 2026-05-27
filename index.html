@@ -36,7 +36,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh
 #map{height:32vh;flex-shrink:0;cursor:crosshair;}
 
 /* TABS */
-.tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg);flex-shrink:0;overflow-x:auto;}
+.tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg);flex-shrink:0;overflow-x:auto;position:sticky;top:0;z-index:100;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{padding:10px 18px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;}
 .tab:hover{color:var(--text);}
@@ -521,12 +521,15 @@ function renderProfile(d){
     <div class="fresh-legend"><span>🟢 &lt;3d fresh</span><span>🟡 3–14d recent</span><span>🔴 &gt;14d stale</span><span>⚪ N/A</span></div>
 
     <div class="sensor-card" onclick="toggleSensor('s2-exp')">
-      <div class="sensor-header">
+      <div class="sensor-header" style="padding:10px 14px">
         <div class="sensor-dot ${freshnessClass(f?.sentinel2?.freshness)}"></div>
         <div class="sensor-info">
-          <div class="sensor-name-row">Sentinel-2 Optical ${freshnessEmoji(f?.sentinel2?.freshness)} <span style='float:right;font-size:10px;color:var(--green);font-weight:700'>${c?.contributions?.['Sentinel-2']?.percent?.toFixed(1)||''}%</span></div>
-          <div class="sensor-val-row"><span class="sensor-value">${v?.ndvi?.toFixed(3)||'—'}</span><span class="sensor-unit">NDVI · ${v?.ndvi_status||''}</span></div>
-          <div class="sensor-age-row">${f?.sentinel2?.age_label||'unknown'}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase">Sentinel-2</span>
+            <span style="font-size:14px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</span>
+            <span style="font-size:11px;color:var(--muted)">${v?.ndvi_status||''}</span>
+            <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">${c?.contributions?.['Sentinel-2']?.percent?.toFixed(1)||''}% · ${f?.sentinel2?.age_label||''}</span>
+          </div>
         </div>
         <div class="sensor-chevron" id="s2-exp-ch">▼</div>
       </div>
@@ -542,12 +545,15 @@ function renderProfile(d){
     </div>
 
     <div class="sensor-card" onclick="toggleSensor('smap-exp')">
-      <div class="sensor-header">
+      <div class="sensor-header" style="padding:10px 14px">
         <div class="sensor-dot ${freshnessClass(f?.smap?.freshness)}"></div>
         <div class="sensor-info">
-          <div class="sensor-name-row">SMAP L4 Moisture ${freshnessEmoji(f?.smap?.freshness)} <span style='float:right;font-size:10px;color:var(--green);font-weight:700'>${c?.contributions?.['SMAP']?.percent?.toFixed(1)||''}%</span></div>
-          <div class="sensor-val-row"><span class="sensor-value">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</span><span class="sensor-unit">m³/m³ surface</span></div>
-          <div class="sensor-age-row">${f?.smap?.age_label||'unknown'}</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase">SMAP L4</span>
+            <span style="font-size:14px;font-weight:700;font-family:var(--mono)">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</span>
+            <span style="font-size:11px;color:var(--muted)">m³/m³ surface</span>
+            <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">${c?.contributions?.['SMAP']?.percent?.toFixed(1)||''}% · ${f?.smap?.age_label||''}</span>
+          </div>
         </div>
         <div class="sensor-chevron" id="smap-exp-ch">▼</div>
       </div>
@@ -563,12 +569,15 @@ function renderProfile(d){
     </div>
 
     <div class="sensor-card" onclick="toggleSensor('sar-exp')">
-      <div class="sensor-header">
+      <div class="sensor-header" style="padding:10px 14px">
         <div class="sensor-dot ${s?.available?freshnessClass(f?.sentinel1?.freshness):'no-data'}"></div>
         <div class="sensor-info">
-          <div class="sensor-name-row">Sentinel-1 SAR ${freshnessEmoji(f?.sentinel1?.freshness)} <span style='float:right;font-size:10px;color:var(--green);font-weight:700'>${c?.contributions?.['Sentinel-1']?.percent?.toFixed(1)||''}%</span></div>
-          <div class="sensor-val-row"><span class="sensor-value">${s?.rvi?.toFixed(3)||'—'}</span><span class="sensor-unit">RVI · ${s?.rvi_interpretation||'No data'}</span></div>
-          <div class="sensor-age-row">${f?.sentinel1?.age_label||'unknown'} · ${s?.acquisitions||0} passes aggregated</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase">SAR</span>
+            <span style="font-size:14px;font-weight:700;font-family:var(--mono)">${s?.rvi?.toFixed(3)||'—'}</span>
+            <span style="font-size:11px;color:var(--muted)">RVI · ${s?.rvi_interpretation||''}</span>
+            <span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--green)">${c?.contributions?.['Sentinel-1']?.percent?.toFixed(1)||''}% · ${f?.sentinel1?.age_label||''}</span>
+          </div>
         </div>
         <div class="sensor-chevron" id="sar-exp-ch">▼</div>
       </div>
@@ -585,12 +594,15 @@ function renderProfile(d){
     </div>
 
     <div class="sensor-card" onclick="toggleSensor('era5-exp')">
-      <div class="sensor-header">
+      <div class="sensor-header" style="padding:10px 14px">
         <div class="sensor-dot recent"></div>
         <div class="sensor-info">
-          <div class="sensor-name-row">ERA5-Land Reanalysis 🟡</div>
-          <div class="sensor-val-row"><span class="sensor-value">${sm?.era5?.surface_mean?.toFixed(3)||'—'}</span><span class="sensor-unit">m³/m³ seasonal</span></div>
-          <div class="sensor-age-row">Seasonal context</div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase">ERA5</span>
+            <span style="font-size:14px;font-weight:700;font-family:var(--mono)">${sm?.era5?.surface_mean?.toFixed(3)||'—'}</span>
+            <span style="font-size:11px;color:var(--muted)">m³/m³ seasonal</span>
+            <span style="margin-left:auto;font-size:10px;font-weight:700;color:#f59e0b">Seasonal baseline</span>
+          </div>
         </div>
         <div class="sensor-chevron" id="era5-exp-ch">▼</div>
       </div>
@@ -684,27 +696,15 @@ function renderProfile(d){
 
   // ── TAB: QUALITY ──
   const qualityHtml=`
-  <div class="section">
+  <div class="section" style="padding:12px 18px">
     <div class="section-label">Data Reliability</div>
-    <div class="reliability-grid">
-      <div class="reliability-card">
-        <div class="reliability-label">Freshness</div>
-        <div class="reliability-value">${fScore}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-      </div>
-      <div class="reliability-card">
-        <div class="reliability-label">Agreement</div>
-        <div class="reliability-value">${a.score}<span style="font-size:12px;color:var(--muted)">/10</span></div>
-      </div>
-      <div class="reliability-card">
-        <div class="reliability-label">Coverage</div>
-        <div class="reliability-value ${d.thermal?.available?'':'warn'}">${d.thermal?.available?'Full':'Partial'}</div>
-      </div>
-      <div class="reliability-card">
-        <div class="reliability-label">Evidence</div>
-        <div class="reliability-value ${a.score>=9?'':'warn'}">${a.score>=9?'Strong':a.score>=7?'Moderate':'Weak'}</div>
-      </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px">
+      <span style="background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">Fresh ${fScore}/10</span>
+      <span style="background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">Agreement ${a.score}/10</span>
+      <span style="background:${d.thermal?.available?'var(--green-lt)':'var(--amber-lt)'};color:${d.thermal?.available?'var(--green)':'var(--amber)'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">${d.thermal?.available?'Full':'Partial'} Coverage</span>
+      <span style="background:${a.score>=9?'var(--green-lt)':'var(--amber-lt)'};color:${a.score>=9?'var(--green)':'var(--amber)'};font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px">${a.score>=9?'Strong':'Moderate'} Evidence</span>
     </div>
-    ${!d.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:8px 10px;background:var(--amber-lt);border-radius:6px">⚠ Missing dimension: ECOSTRESS thermal — limited by Atlantic cloud cover</div>':''}
+    ${!d.thermal?.available?'<div style="font-size:11px;color:var(--amber);padding:6px 10px;background:var(--amber-lt);border-radius:6px">⚠ ECOSTRESS thermal unavailable — Atlantic cloud cover</div>':''}
   </div>
 
   <div class="section">
@@ -722,12 +722,11 @@ function renderProfile(d){
     ${trendHtml}
   </div>
 
-  <div class="section">
-    <div class="section-label">Field History</div>
-    <div style="text-align:center;padding:20px;color:var(--muted)">
-      <div style="font-size:24px;margin-bottom:8px">📈</div>
-      <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px">7-day trend</div>
-      <div style="font-size:12px">Coming soon — historical NDVI and moisture trends</div>
+  <div class="section" style="padding:10px 18px">
+    <div style="display:flex;align-items:center;gap:8px;color:var(--muted)">
+      <span style="font-size:14px">📈</span>
+      <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em">Field History</span>
+      <span style="font-size:11px;background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:100px;margin-left:auto">Coming soon</span>
     </div>
   </div>`;
 
