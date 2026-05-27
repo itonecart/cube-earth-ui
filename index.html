@@ -681,7 +681,7 @@ function renderProfile(d){
       const arrow=diff>0.05?"\u2191":diff<-0.05?"\u2193":"\u2192";
       const label=diff>0.05?"Wetter than seasonal":diff<-0.05?"Drier than seasonal":"Near seasonal average";
       const col=diff>0.05?"#1d4ed8":diff<-0.05?"#d97706":"#16a34a";
-      return `<span style="font-size:18px;font-weight:700;color:${col}">${arrow} ${label}</span> <span style="font-size:12px;color:var(--muted);margin-left:6px">${diff>=0?"+":""}${diff.toFixed(3)} m\u00b3/m\u00b3 vs ERA5</span>`;
+      return `<div style="font-size:16px;font-weight:700;color:${col};margin-bottom:3px">${arrow} ${label}</div><div style="font-size:11px;color:var(--muted)">SMAP ${smap.toFixed(3)} vs ERA5 ${era5.toFixed(3)} m³/m³ (diff ${diff>=0?"+":""}${diff.toFixed(3)})</div>`;
     })()}
   </div>
 
