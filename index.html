@@ -648,49 +648,53 @@ function renderProfile(d){
 
   // ── TAB: CONFIDENCE ──
   const confidenceHtml=`
-  <div class="section">
-    <div class="section-label">Confidence Score</div>
-    <div class="conf-hero">
-      <div class="conf-score">${c.score}<span>/10</span></div>
-      <div class="conf-badges">
+  <div class="section" style="padding:10px 18px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="font-size:36px;font-weight:700;color:var(--green);line-height:1">${c.score}<span style="font-size:14px;color:var(--muted);font-weight:400">/10</span></div>
+      <div style="display:flex;flex-direction:column;gap:3px">
         <span class="conf-class ${cc.css}">${cc.label}</span>
-        <span class="uncertainty-badge" style="background:${uncColor.bg};color:${uncColor.txt}">Uncertainty: ${uncLabel}</span>
+        <span style="font-size:9px;font-weight:600;padding:2px 8px;border-radius:100px;background:${uncColor.bg};color:${uncColor.txt}">Uncertainty: ${uncLabel}</span>
       </div>
     </div>
-    <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
+    <div class="conf-bar-wrap" style="margin-bottom:0"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
   </div>
 
-  <div class="section">
-    <div class="section-label">Confidence Contributors — % of final score</div>
+  <div class="section" style="padding:10px 18px">
+    <div class="section-label">Contributors — % of final score</div>
     ${Object.entries(c.contributions).map(([k,v])=>{
-      const labels={'Sentinel-2':'Optical signal','SMAP':'Soil moisture support','ERA5':'Weather baseline','Sentinel-1':'Radar structure','ECOSTRESS':'Thermal layer','Parcel':'Parcel certainty','Agreement':'Cross-sensor agreement'};
+      const labels={'Sentinel-2':'Optical','SMAP':'Soil moisture','ERA5':'Weather','Sentinel-1':'Radar','ECOSTRESS':'Thermal','Parcel':'Parcel','Agreement':'Agreement'};
       const friendly=labels[k]||k;
-      return `<div class="contrib-row">
-        <div class="contrib-name">${friendly}${v.age_days?` <span style="font-size:10px;color:var(--muted)">(${v.age_days}d)</span>`:''}</div>
-        <div class="contrib-bar-wrap"><div class="contrib-bar-fill" style="background:${v.percent===0?'var(--border)':'var(--green)'};width:${Math.min(v.percent*3,100)}%"></div></div>
-        <div class="contrib-pct" style="color:${v.percent===0?'var(--muted)':'var(--text)'}">${v.percent===0?'—':v.percent.toFixed(1)+'%'}</div>
+      const barW=Math.min(v.percent*3,100);
+      return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)">
+        <div style="width:68px;font-size:11px;color:var(--text);flex-shrink:0">${friendly}</div>
+        <div style="flex:1;height:6px;background:var(--border);border-radius:3px">
+          <div style="height:100%;border-radius:3px;background:${v.percent===0?'var(--border)':v.percent>20?'var(--green)':'#60a5fa'};width:${barW}%"></div>
+        </div>
+        <div style="width:32px;text-align:right;font-size:11px;font-weight:700;color:${v.percent===0?'var(--muted)':'var(--text)'}">${v.percent===0?'—':Math.round(v.percent)+'%'}</div>
       </div>`;
     }).join('')}
   </div>
 
-  <div class="section">
-    <div class="section-label">Cross-sensor Agreement</div>
-    <div class="agreement-score">${a.score}<span style="font-size:14px;color:var(--muted);font-family:var(--sans)">/10</span></div>
-    <ul class="agreement-list">
-      ${(a.agreements||[]).map(t=>`<li>${t}</li>`).join('')}
-      ${(a.flags||[]).map(t=>`<li class="flag">${t}</li>`).join('')}
-    </ul>
+  <div class="section" style="padding:10px 18px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <span class="section-label" style="margin:0">Cross-sensor Agreement</span>
+      <span style="font-size:20px;font-weight:700;color:var(--green)">${a.score}/10</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      ${(a.agreements||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--text)"><span style="position:absolute;left:0;color:var(--green);font-weight:700">✓</span>${t.length>60?t.substring(0,60)+'…':t}</div>`).join('')}
+      ${(a.flags||[]).map(t=>`<div style="font-size:11px;padding:3px 0 3px 14px;position:relative;color:var(--amber)"><span style="position:absolute;left:0;font-weight:700">!</span>${t.length>60?t.substring(0,60)+'…':t}</div>`).join('')}
+    </div>
   </div>
 
   ${(c.confidence_reducers||[]).length>0?`
-  <div class="section">
-    <div class="conf-panel reduced">
-      <div class="conf-panel-title">Reduced by:</div>
-      ${(c.confidence_reducers||[]).map(r=>`<div class="conf-panel-item">− ${r.factor} — ${r.impact}${r.factor.includes('ECOSTRESS')?'<span style="float:right;font-weight:700;color:#92400e">−0.3</span>':''}</div>`).join('')}
+  <div class="section" style="padding:10px 18px">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">
+      <span style="font-size:10px;font-weight:700;color:#92400e;background:#fffbeb;border:1px solid #fde68a;padding:3px 8px;border-radius:100px">Reduced:</span>
+      ${(c.confidence_reducers||[]).map(r=>`<span style="font-size:10px;color:#78350f;background:#fffbeb;border:1px solid #fde68a;padding:3px 8px;border-radius:100px">${r.factor}${r.factor.includes('ECOSTRESS')?'  −0.3':''}</span>`).join('')}
     </div>
-    <div class="conf-panel boosted">
-      <div class="conf-panel-title">Strengthened by:</div>
-      ${(c.confidence_boosters||[]).map(b=>`<div class="conf-panel-item">✓ ${b.factor} — ${b.impact}</div>`).join('')}
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:700;color:#166534;background:#f0fdf4;border:1px solid #86efac;padding:3px 8px;border-radius:100px">Strengthened:</span>
+      ${(c.confidence_boosters||[]).map(b=>`<span style="font-size:10px;color:#15803d;background:#f0fdf4;border:1px solid #86efac;padding:3px 8px;border-radius:100px">✓ ${b.factor}</span>`).join('')}
     </div>
   </div>`:''}`;
 
