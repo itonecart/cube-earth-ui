@@ -23,518 +23,203 @@
     --mono:     'JetBrains Mono', monospace;
     --sans:     'Inter', sans-serif;
   }
-
   * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    font-family: var(--sans);
-    background: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  body { font-family:var(--sans); background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
 
   /* ── TOP BAR ── */
-  .topbar {
-    height: 56px;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 16px;
-    flex-shrink: 0;
-    z-index: 1000;
-  }
+  .topbar { height:52px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 16px; gap:12px; flex-shrink:0; z-index:1000; }
+  .logo { font-size:15px; font-weight:700; color:var(--green); letter-spacing:-0.02em; white-space:nowrap; }
+  .logo span { color:var(--text); }
+  .coord-input { flex:1; max-width:260px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:12px; padding:7px 12px; border-radius:8px; outline:none; transition:border-color 0.15s; }
+  .coord-input:focus { border-color:var(--green); }
+  .btn-scan { background:var(--green); color:#fff; border:none; font-family:var(--sans); font-size:13px; font-weight:600; padding:7px 18px; border-radius:8px; cursor:pointer; transition:background 0.15s; white-space:nowrap; }
+  .btn-scan:hover { background:#15803d; }
+  .btn-scan:disabled { background:#86efac; cursor:not-allowed; }
+  .tagline { font-size:11px; color:var(--muted); margin-left:auto; white-space:nowrap; }
 
-  .logo {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-  }
-
-  .logo span { color: var(--text); }
-
-  .coord-input {
-    flex: 1;
-    max-width: 280px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  .coord-input:focus { border-color: var(--green); }
-
-  .btn-scan {
-    background: var(--green);
-    color: #fff;
-    border: none;
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 600;
-    padding: 8px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    white-space: nowrap;
-  }
-
-  .btn-scan:hover { background: #15803d; }
-  .btn-scan:disabled { background: #86efac; cursor: not-allowed; }
-
-  .tagline {
-    font-size: 12px;
-    color: var(--muted);
-    margin-left: auto;
-    white-space: nowrap;
-  }
-
-  /* ── MAIN AREA ── */
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  /* ── MAP ── */
-  #map {
-    height: 28vh;
-    flex-shrink: 0;
-    cursor: crosshair;
-    z-index: 1;
-  }
-
-  /* ── PROFILE PANEL ── */
-  #panel {
-    flex: 1;
-    overflow-y: auto;
-    background: var(--bg);
-    border-top: 2px solid var(--border);
-    padding-bottom: 40px;
-  }
-
-  #panel::-webkit-scrollbar { width: 6px; }
-  #panel::-webkit-scrollbar-track { background: var(--surface); }
-  #panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  /* ── MAIN ── */
+  .main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+  #map { height:28vh; flex-shrink:0; cursor:crosshair; z-index:1; }
+  #panel { flex:1; overflow-y:auto; background:var(--bg); border-top:2px solid var(--border); padding-bottom:40px; }
+  #panel::-webkit-scrollbar { width:4px; }
+  #panel::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
   /* ── IDLE ── */
-  .idle {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 12px;
-    color: var(--muted);
-    padding: 40px;
-    text-align: center;
-  }
-
-  .idle-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--green-lt);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-  }
-
-  .idle h3 { font-size: 16px; color: var(--text); font-weight: 600; }
-  .idle p { font-size: 14px; line-height: 1.6; max-width: 320px; }
+  .idle { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:12px; color:var(--muted); padding:40px; text-align:center; }
+  .idle-icon { width:52px; height:52px; background:var(--green-lt); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .idle h3 { font-size:16px; color:var(--text); font-weight:600; }
+  .idle p { font-size:14px; line-height:1.6; max-width:300px; }
 
   /* ── LOADING ── */
-  .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    gap: 16px;
-  }
-
-  .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid var(--border);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .loading p { font-size: 14px; color: var(--muted); }
+  .loading { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; gap:16px; }
+  .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--green); border-radius:50%; animation:spin 0.8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-steps { font-size:13px; color:var(--muted); text-align:center; line-height:2.2; }
+  .loading-steps .step { display:block; opacity:0.35; transition:opacity 0.3s; }
+  .loading-steps .step.active { opacity:1; color:var(--green); font-weight:500; }
 
   /* ── PROFILE GRID ── */
-  .profile {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 0;
-  }
+  .profile { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); }
 
   /* ── SECTION ── */
-  .section {
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
+  .section { padding:16px 20px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); }
+  .section-label { font-size:10px; font-weight:700; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:12px; }
 
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 14px;
-  }
-
-  /* ── PARCEL ── */
-  .parcel-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-    line-height: 1.3;
-  }
-
-  .parcel-meta {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-
-  .badge {
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 2px 10px;
-    border-radius: 100px;
-    margin-right: 6px;
-    margin-top: 8px;
-  }
-
-  .badge-green { background: var(--green-lt); color: var(--green); }
-  .badge-amber { background: var(--amber-lt); color: var(--amber); }
-  .badge-gray  { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  /* ── PARCEL BADGE ── */
+  .parcel-badge { display:inline-flex; align-items:center; gap:6px; background:var(--green-lt); color:var(--green); font-size:11px; font-weight:700; padding:4px 10px; border-radius:100px; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:8px; }
+  .parcel-name { font-size:17px; font-weight:700; color:var(--text); margin-bottom:5px; line-height:1.3; }
+  .parcel-meta { font-size:13px; color:var(--muted); line-height:1.6; }
+  .badge { display:inline-block; font-size:11px; font-weight:500; padding:2px 9px; border-radius:100px; margin-right:5px; margin-top:6px; }
+  .badge-green { background:var(--green-lt); color:var(--green); }
+  .badge-amber { background:var(--amber-lt); color:var(--amber); }
+  .badge-gray  { background:var(--surface); color:var(--muted); border:1px solid var(--border); }
 
   /* ── CONFIDENCE ── */
-  .conf-score {
-    font-size: 48px;
-    font-weight: 700;
-    color: var(--green);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
+  .conf-row { display:flex; align-items:flex-end; gap:12px; margin-bottom:6px; }
+  .conf-score { font-size:44px; font-weight:700; color:var(--green); line-height:1; }
+  .conf-score span { font-size:18px; color:var(--muted); font-weight:400; }
+  .conf-class { font-size:11px; font-weight:700; letter-spacing:0.08em; padding:3px 10px; border-radius:100px; text-transform:uppercase; margin-bottom:2px; }
+  .conf-class.operational { background:#dbeafe; color:#1d4ed8; }
+  .conf-class.high-conf   { background:var(--green-lt); color:var(--green); }
+  .conf-class.moderate    { background:var(--amber-lt); color:var(--amber); }
+  .conf-class.limited     { background:var(--red-lt); color:var(--red); }
+  .conf-bar-wrap { height:5px; background:var(--border); border-radius:3px; margin-bottom:12px; }
+  .conf-bar-fill { height:100%; background:var(--green); border-radius:3px; transition:width 0.8s ease; }
 
-  .conf-score span { font-size: 20px; color: var(--muted); font-weight: 400; }
+  /* Expandable confidence */
+  .conf-toggle { font-size:12px; color:var(--green); cursor:pointer; border:none; background:none; padding:0; font-weight:500; margin-bottom:8px; }
+  .conf-details { display:none; }
+  .conf-details.open { display:block; }
 
-  .conf-level {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
+  .contrib-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+  .contrib-item { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
+  .contrib-name { font-size:10px; color:var(--muted); margin-bottom:3px; }
+  .contrib-pct  { font-size:14px; font-weight:600; color:var(--text); }
+  .contrib-item.zero .contrib-pct { color:var(--muted); }
 
-  .conf-bar-wrap {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    margin-bottom: 16px;
-  }
-
-  .conf-bar-fill {
-    height: 100%;
-    background: var(--green);
-    border-radius: 3px;
-    transition: width 0.8s ease;
-  }
-
-  .contrib-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .contrib-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-
-  .contrib-name { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-  .contrib-pct  { font-size: 15px; font-weight: 600; color: var(--text); }
-  .contrib-item.zero .contrib-pct { color: var(--muted); }
+  .conf-panel { margin:6px 0; padding:10px 12px; border-radius:8px; font-size:12px; }
+  .conf-panel.reduced    { background:#fffbeb; border:1px solid #fde68a; }
+  .conf-panel.boosted    { background:#f0fdf4; border:1px solid #86efac; }
+  .conf-panel-title      { font-weight:600; margin-bottom:4px; }
+  .conf-panel.reduced .conf-panel-title { color:#92400e; }
+  .conf-panel.boosted .conf-panel-title { color:#166534; }
+  .conf-panel-item       { padding:2px 0; }
+  .conf-panel.reduced .conf-panel-item { color:#78350f; }
+  .conf-panel.boosted .conf-panel-item { color:#15803d; }
 
   /* ── SENSORS ── */
-  .sensor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .sensor-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .sensor-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; position:relative; }
+  .sensor-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:10px 10px 0 0; }
+  .sensor-card.fresh::before   { background:var(--green); }
+  .sensor-card.recent::before  { background:#f59e0b; }
+  .sensor-card.stale::before   { background:var(--red); }
+  .sensor-card.no-data::before { background:var(--border); }
+  .sensor-name { font-size:10px; font-weight:600; letter-spacing:0.08em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .sensor-value { font-size:22px; font-weight:700; color:var(--text); line-height:1; margin-bottom:3px; font-family:var(--mono); }
+  .sensor-unit  { font-size:11px; color:var(--muted); line-height:1.4; }
+  .sensor-age   { display:flex; align-items:center; gap:4px; margin-top:6px; font-size:10px; }
+  .dot-fresh   { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; }
+  .dot-recent  { width:7px; height:7px; border-radius:50%; background:#f59e0b; display:inline-block; }
+  .dot-stale   { width:7px; height:7px; border-radius:50%; background:var(--red); display:inline-block; }
+  .dot-nodata  { width:7px; height:7px; border-radius:50%; background:#cbd5e1; display:inline-block; }
 
-  .sensor-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
-    position: relative;
-    border-top: 3px solid var(--green);
-  }
-
-  .sensor-card.stale      { border-top-color: var(--amber); }
-  .sensor-card.unavailable { border-top-color: var(--border); }
-
-  .sensor-name {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .sensor-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text);
-    line-height: 1;
-    margin-bottom: 4px;
-    font-family: var(--mono);
-  }
-
-  .sensor-unit { font-size: 12px; color: var(--muted); line-height: 1.4; }
-  .sensor-age  { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  /* ── DECISIONS ── */
+  .decision-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .decision-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 12px; text-align:center; }
+  .decision-emoji { font-size:22px; margin-bottom:6px; }
+  .decision-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:6px; }
+  .decision-value { font-size:15px; font-weight:700; }
+  .decision-value.good     { color:var(--green); }
+  .decision-value.moderate { color:var(--amber); }
+  .decision-value.poor     { color:var(--red); }
+  .decision-sub { font-size:10px; color:var(--muted); margin-top:3px; }
 
   /* ── AGREEMENT ── */
-  .agreement-score {
-    font-size: 36px;
-    font-weight: 700;
-    color: var(--green);
-    margin-bottom: 4px;
-    font-family: var(--mono);
-  }
+  .agreement-score { font-size:34px; font-weight:700; color:var(--green); margin-bottom:8px; font-family:var(--mono); }
+  .agreement-list { list-style:none; }
+  .agreement-list li { font-size:12px; color:var(--text); padding:5px 0 5px 18px; position:relative; line-height:1.5; border-bottom:1px solid var(--border); }
+  .agreement-list li:last-child { border-bottom:none; }
+  .agreement-list li::before { content:'✓'; position:absolute; left:0; color:var(--green); font-weight:600; }
+  .agreement-list li.flag::before { content:'!'; color:var(--amber); }
+  .agreement-list li.flag { color:var(--amber); }
 
-  .agreement-list { list-style: none; margin-top: 8px; }
-
-  .agreement-list li {
-    font-size: 13px;
-    color: var(--text);
-    padding: 6px 0 6px 20px;
-    position: relative;
-    line-height: 1.5;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .agreement-list li:last-child { border-bottom: none; }
-
-  .agreement-list li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--green);
-    font-weight: 600;
-  }
-
-  .agreement-list li.flag::before { content: '!'; color: var(--amber); }
-  .agreement-list li.flag { color: var(--amber); }
-
-  /* ── AGRONOMIC ── */
-  .agro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-
-  .agro-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 10px;
-    text-align: center;
-  }
-
-  .agro-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
-  .agro-value { font-size: 15px; font-weight: 700; color: var(--text); }
-  .agro-value.good     { color: var(--green); }
-  .agro-value.moderate { color: var(--amber); }
-  .agro-value.poor     { color: var(--red); }
-
-  /* ── EXPLAINABILITY ── */
-  .explain-item { margin-bottom: 16px; }
-
-  .explain-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .explain-because { list-style: none; }
-
-  .explain-because li {
-    font-size: 13px;
-    color: var(--muted);
-    padding: 5px 0 5px 16px;
-    position: relative;
-    line-height: 1.5;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .explain-because li:last-child { border-bottom: none; }
-
-  .explain-because li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
-    color: var(--border);
-  }
+  /* ── GRAZING BREAKDOWN ── */
+  .breakdown-row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border); font-size:12px; }
+  .breakdown-row:last-child { border-bottom:none; }
+  .breakdown-pts { font-weight:700; }
+  .breakdown-pts.pos { color:var(--green); }
+  .breakdown-pts.neg { color:var(--red); }
+  .breakdown-pts.zero { color:var(--muted); }
 
   /* ── FRESHNESS ── */
-  .freshness-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .freshness-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .fresh-item { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; display:flex; justify-content:space-between; align-items:center; }
+  .fresh-sensor { font-size:12px; font-weight:600; color:var(--text); }
+  .fresh-age { font-size:11px; display:flex; align-items:center; gap:5px; }
 
-  .fresh-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  /* ── EXPLAINABILITY ── */
+  .explain-item { margin-bottom:14px; }
+  .explain-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .explain-because { list-style:none; }
+  .explain-because li { font-size:12px; color:var(--muted); padding:4px 0 4px 14px; position:relative; line-height:1.5; border-bottom:1px solid var(--border); }
+  .explain-because li:last-child { border-bottom:none; }
+  .explain-because li::before { content:'—'; position:absolute; left:0; color:var(--border); }
 
-  .fresh-sensor { font-size: 12px; font-weight: 600; color: var(--text); }
-  .fresh-age    { font-size: 12px; }
-  .fresh-current { color: var(--green); }
-  .fresh-recent  { color: #059669; }
-  .fresh-stale   { color: var(--amber); }
-  .fresh-no_data { color: var(--muted); }
-  .fresh-seasonal_context { color: var(--muted); font-style: italic; }
-
-  /* ── MAP MARKER ── */
-  .pulse-marker {
-    width: 16px; height: 16px;
-    background: var(--green);
-    border: 3px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 0 3px var(--green), 0 2px 8px rgba(22,163,74,0.4);
-  }
+  /* ── TILLAGE ── */
+  .tillage-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+  .tillage-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px; }
+  .tillage-label { font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:600; letter-spacing:0.08em; margin-bottom:6px; }
+  .tillage-value { font-size:16px; font-weight:700; color:var(--text); margin-bottom:3px; }
+  .tillage-sub { font-size:11px; color:var(--muted); }
+  .tillage-note { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 12px; font-size:12px; }
+  .tillage-warn { color:var(--amber); font-size:11px; margin-top:6px; }
 
   /* ── ERROR ── */
-  .error-box {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--red-lt);
-    border: 1px solid #fca5a5;
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin: 20px 24px;
-    font-size: 14px;
-    color: var(--red);
-  }
+  .error-box { display:flex; align-items:center; gap:12px; background:var(--red-lt); border:1px solid #fca5a5; border-radius:10px; padding:16px 20px; margin:20px; font-size:14px; color:var(--red); }
+
+  /* ── MAP ── */
+  .leaflet-container { background:#e8f4ea; }
+  .pulse-marker { width:14px; height:14px; background:var(--green); border:3px solid #fff; border-radius:50%; box-shadow:0 0 0 3px var(--green), 0 2px 8px rgba(22,163,74,0.4); }
 
   /* ── MOBILE ── */
   @media (max-width: 768px) {
-    body { overflow: auto; height: auto; }
-    #map { height: 25vh !important; }
-
-    .topbar {
-      padding: 10px 12px;
-      gap: 8px;
-      flex-wrap: wrap;
-      height: auto;
-    }
-
-    .logo { font-size: 15px; }
-    .tagline { display: none; }
-
-    .coord-input {
-      font-size: 14px;
-      padding: 10px 12px;
-      min-width: 0;
-      flex: 1;
-    }
-
-    .btn-scan {
-      font-size: 14px;
-      padding: 10px 16px;
-    }
-
-    .main { flex-direction: column; height: auto; }
-
-    #map { height: 35vh; }
-
-    #panel {
-      overflow: visible;
-      padding-bottom: 60px;
-    }
-
-    .profile {
-      grid-template-columns: 1fr;
-    }
-
-    .section {
-      border-right: none;
-      padding: 16px;
-    }
-
-    .conf-score { font-size: 40px; }
-
-    .contrib-grid { grid-template-columns: 1fr 1fr; }
-
-    .sensor-grid { grid-template-columns: 1fr 1fr; }
-
-    .sensor-value { font-size: 20px; }
-
-    .agro-grid { grid-template-columns: 1fr 1fr 1fr; }
-
-    .freshness-grid { grid-template-columns: 1fr; }
-
-    .agreement-list li { font-size: 13px; }
-
-    .explain-because li { font-size: 13px; }
-
-    .parcel-name { font-size: 16px; }
+    body { overflow:auto; height:auto; }
+    #map { height:25vh !important; }
+    #panel { overflow:visible; padding-bottom:60px; }
+    .profile { grid-template-columns:1fr; }
+    .section { border-right:none; padding:14px 16px; }
+    .tagline { display:none; }
+    .topbar { padding:8px 12px; gap:8px; height:auto; }
+    .coord-input { font-size:13px; padding:8px 12px; }
+    .decision-grid { grid-template-columns:1fr 1fr 1fr; }
+    .sensor-grid { grid-template-columns:1fr 1fr; }
+    .freshness-grid { grid-template-columns:1fr; }
+    .conf-score { font-size:38px; }
   }
-
   @media (max-width: 400px) {
-    .sensor-grid { grid-template-columns: 1fr; }
-    .contrib-grid { grid-template-columns: 1fr; }
-    .agro-grid { grid-template-columns: 1fr; }
-    .conf-score { font-size: 36px; }
+    .decision-grid { grid-template-columns:1fr; }
+    .sensor-grid { grid-template-columns:1fr; }
+    .tillage-grid { grid-template-columns:1fr; }
   }
-
 </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">⬡ Cube<span> Earth</span></div>
-  <input type="text" class="coord-input" id="coord-input" placeholder="53.7100, -6.2900 or click map"/>
+  <input type="text" class="coord-input" id="coord-input" placeholder="53.7100, -6.2900"/>
   <button class="btn-scan" id="scan-btn" onclick="scanCoords()">Scan Field</button>
   <div class="tagline">Irish Field Intelligence · Live Satellite Data</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
   <div id="map"></div>
   <div id="panel">
     <div class="idle">
       <div class="idle-icon">🛰</div>
       <h3>Click any field in Ireland</h3>
-      <p>Or enter coordinates above and click Scan Field to get a live satellite intelligence report.</p>
+      <p>Or enter coordinates above to get a live satellite field report.</p>
     </div>
   </div>
 </div>
@@ -543,29 +228,15 @@
 const API_URL = 'https://cube-earth.onrender.com';
 
 // ── MAP ──
-const map = L.map('map', { zoomControl:false }).setView([53.5, -8.0], 7);
-
-const satellite = L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  { attribution:'Esri', maxZoom:19 }
-);
-
-const streets = L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { attribution:'© OpenStreetMap', maxZoom:19 }
-);
-
+const map = L.map('map', {zoomControl:false}).setView([53.5, -8.0], 7);
+const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution:'Esri', maxZoom:19});
+const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19});
 satellite.addTo(map);
-L.control.layers({'🛰 Satellite': satellite, '🗺 Streets': streets}, {}, {position:'topright'}).addTo(map);
-L.control.zoom({ position:'bottomright' }).addTo(map);
+L.control.layers({'🛰 Satellite':satellite, '🗺 Streets':streets}, {}, {position:'topright'}).addTo(map);
+L.control.zoom({position:'bottomright'}).addTo(map);
 
 let marker = null;
-
-const icon = L.divIcon({
-  className:'',
-  html:'<div class="pulse-marker"></div>',
-  iconSize:[16,16], iconAnchor:[8,8],
-});
+const icon = L.divIcon({className:'', html:'<div class="pulse-marker"></div>', iconSize:[14,14], iconAnchor:[7,7]});
 
 map.on('click', e => {
   const {lat, lng} = e.latlng;
@@ -589,6 +260,57 @@ function scanCoords() {
   }
 }
 
+// ── FRESHNESS HELPERS ──
+function freshnessClass(f) {
+  if (!f) return 'no-data';
+  if (f === 'current') return 'fresh';
+  if (f === 'recent') return 'recent';
+  if (f === 'stale') return 'stale';
+  if (f === 'seasonal_context') return 'recent';
+  return 'no-data';
+}
+
+function freshnessDot(f) {
+  if (f === 'current') return '<span class="dot-fresh"></span>';
+  if (f === 'recent') return '<span class="dot-recent"></span>';
+  if (f === 'stale') return '<span class="dot-stale"></span>';
+  return '<span class="dot-nodata"></span>';
+}
+
+function freshnessLabel(f) {
+  if (f === 'current') return '🟢';
+  if (f === 'recent') return '🟡';
+  if (f === 'stale') return '🔴';
+  return '⚪';
+}
+
+// ── CONFIDENCE CLASS ──
+function confClass(score) {
+  if (score >= 8.5) return {label: 'High Confidence', css: 'high-conf'};
+  if (score >= 7.0) return {label: 'Operational', css: 'operational'};
+  if (score >= 5.0) return {label: 'Moderate', css: 'moderate'};
+  return {label: 'Limited', css: 'limited'};
+}
+
+// ── SCORE COLOR ──
+function scoreColor(label) {
+  if (!label) return '';
+  const l = label.toLowerCase();
+  if (l.includes('excellent')||l.includes('good')||l.includes('suitable')||l.includes('high')) return 'good';
+  if (l.includes('moderate')||l.includes('adequate')) return 'moderate';
+  if (l.includes('poor')||l.includes('unsuitable')||l.includes('stress')||l.includes('not suitable')) return 'poor';
+  return '';
+}
+
+// ── SAR CONSISTENCY ──
+function sarConsistencyLabel(rvi, ndvi) {
+  if (rvi === null || ndvi === null) return 'moderate vegetation condition';
+  const diff = Math.abs(rvi - ndvi);
+  if (diff < 0.15) return 'high vegetation condition';
+  if (diff < 0.25) return 'moderate vegetation condition';
+  return 'variable vegetation condition';
+}
+
 // ── SCAN ──
 async function scanField(lat, lng) {
   showLoading();
@@ -596,39 +318,55 @@ async function scanField(lat, lng) {
     const res = await fetch(`${API_URL}/field_profile`, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ lat, lng, year: new Date().getFullYear() }),
+      body:JSON.stringify({lat, lng, year: new Date().getFullYear()}),
     });
     const data = await res.json();
     if (data.success) renderProfile(data);
     else showError(data.detail || 'API error');
   } catch(err) {
-    showError('Error: ' + err.message + ' — ' + err.stack?.split('\n')[0]);
+    showError('Could not reach Cube Earth API. It may be waking up — try again in 30 seconds.');
   }
 }
 
+// ── LOADING ──
+let stepInterval = null;
 function showLoading() {
   document.getElementById('scan-btn').disabled = true;
   document.getElementById('panel').innerHTML = `
     <div class="loading">
       <div class="spinner"></div>
-      <p>Scanning field with live satellite data…</p>
+      <div class="loading-steps">
+        <span class="step active">🛰 Fetching Sentinel-2 imagery...</span>
+        <span class="step">💧 Computing soil moisture...</span>
+        <span class="step">📡 Extracting SAR backscatter...</span>
+        <span class="step">🧮 Calculating confidence score...</span>
+        <span class="step">🌱 Generating field profile...</span>
+      </div>
     </div>`;
+  let step = 0;
+  if (stepInterval) clearInterval(stepInterval);
+  const steps = document.querySelectorAll('.loading-steps .step');
+  stepInterval = setInterval(() => {
+    steps.forEach(s => s.classList.remove('active'));
+    step = Math.min(step + 1, steps.length - 1);
+    steps[step].classList.add('active');
+  }, 2500);
 }
 
-function scoreColor(label) {
-  if (!label) return '';
-  const l = label.toLowerCase();
-  if (l.includes('excellent')||l.includes('good')||l.includes('suitable')) return 'good';
-  if (l.includes('moderate')) return 'moderate';
-  if (l.includes('poor')||l.includes('unsuitable')||l.includes('stress')) return 'poor';
-  return '';
-}
-
+// ── RENDER ──
 function renderProfile(d) {
+  if (stepInterval) clearInterval(stepInterval);
   document.getElementById('scan-btn').disabled = false;
   const c=d.confidence, v=d.vegetation, sm=d.soil_moisture,
         s=d.sar, a=d.agreement, e=d.explainability,
         f=d.freshness, ag=d.agronomic, p=d.parcel, te=d.terrain;
+
+  const cc = confClass(c.score);
+  const cropIcon = ag.crop_class === 'grassland' ? '🌱' :
+                   ag.crop_class === 'tillage' ? '🌾' :
+                   ag.crop_class === 'arable' ? '🥕' : '🌿';
+
+  const sarConsistency = sarConsistencyLabel(s?.rvi, v?.ndvi);
 
   document.getElementById('panel').innerHTML = `
   <div class="profile">
@@ -636,12 +374,14 @@ function renderProfile(d) {
     <!-- PARCEL -->
     <div class="section">
       <div class="section-label">Field / Parcel</div>
+      <div class="parcel-badge">${cropIcon} ${ag.crop_info?.label || 'Field'}</div>
       <div class="parcel-name">${p ? p.crop||'Unknown crop' : 'No parcel matched'}</div>
       <div class="parcel-meta">
         ${p ? `${p.claim_area} ha &nbsp;·&nbsp; ${p.olr||''}` : ''}
-        &nbsp;·&nbsp; ${te?.elevation_m ?? "?"}m elevation &nbsp;·&nbsp; ${te?.terrain ?? "unknown"}
+        ${te?.elevation_m ? `&nbsp;·&nbsp; ${te.elevation_m}m` : ''}
+        ${te?.terrain ? `&nbsp;·&nbsp; ${te.terrain}` : ''}
       </div>
-      <div>
+      <div style="margin-top:6px">
         ${p?.grassland ? '<span class="badge badge-green">Grassland</span>' : ''}
         ${p?.tillage   ? '<span class="badge badge-amber">Tillage</span>'   : ''}
         ${p?.eco       ? '<span class="badge badge-green">ECO</span>'       : ''}
@@ -652,57 +392,62 @@ function renderProfile(d) {
     <!-- CONFIDENCE -->
     <div class="section">
       <div class="section-label">Confidence Score</div>
-      <div class="conf-score">${c.score}<span>/10</span></div>
-      <div class="conf-level">${c.level.replace('-',' ')}</div>
-      <div class="conf-bar-wrap">
-        <div class="conf-bar-fill" style="width:${c.score*10}%"></div>
+      <div class="conf-row">
+        <div class="conf-score">${c.score}<span>/10</span></div>
+        <div>
+          <div class="conf-class ${cc.css}">${cc.label}</div>
+        </div>
       </div>
-      <div class="contrib-grid">
-        ${Object.entries(c.contributions).map(([k,v])=>`
-          <div class="contrib-item ${v.percent===0?'zero':''}">
-            <div class="contrib-name">${k}${v.age_days ? ` · ${v.age_days}d` : ''}</div>
-            <div class="contrib-pct">${v.percent===0 ? 'unavailable' : v.percent.toFixed(1)+'%'}</div>
-          </div>`).join('')}
+      <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${c.score*10}%"></div></div>
+      <button class="conf-toggle" onclick="toggleConf()">▼ View confidence factors</button>
+      <div class="conf-details" id="conf-details">
+        <div class="contrib-grid">
+          ${Object.entries(c.contributions).map(([k,v])=>`
+            <div class="contrib-item ${v.percent===0?'zero':''}">
+              <div class="contrib-name">${k}${v.age_days ? ` · ${v.age_days}d` : ''}</div>
+              <div class="contrib-pct">${v.percent===0 ? 'unavailable' : v.percent.toFixed(1)+'%'}</div>
+            </div>`).join('')}
+        </div>
+        ${(c.confidence_reducers||[]).length > 0 ? `
+        <div class="conf-panel reduced">
+          <div class="conf-panel-title">Reduced by:</div>
+          ${(c.confidence_reducers||[]).map(r=>`<div class="conf-panel-item">• ${r.factor} — ${r.impact}</div>`).join('')}
+        </div>` : ''}
+        ${(c.confidence_boosters||[]).length > 0 ? `
+        <div class="conf-panel boosted">
+          <div class="conf-panel-title">Strengthened by:</div>
+          ${(c.confidence_boosters||[]).map(b=>`<div class="conf-panel-item">✓ ${b.factor} — ${b.impact}</div>`).join('')}
+        </div>` : ''}
       </div>
-      ${(c.confidence_reducers||[]).length > 0 ? `
-      <div style="margin:10px 0;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:12px;">
-        <div style="font-weight:600;color:#92400e;margin-bottom:4px;">Reduced by:</div>
-        ${(c.confidence_reducers||[]).map(r=>`<div style="color:#78350f;padding:2px 0">• ${r.factor} — ${r.impact}</div>`).join('')}
-      </div>` : ''}
-      ${(c.confidence_boosters||[]).length > 0 ? `
-      <div style="margin:10px 0;padding:10px 12px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;font-size:12px;">
-        <div style="font-weight:600;color:#166534;margin-bottom:4px;">Strengthened by:</div>
-        ${(c.confidence_boosters||[]).map(b=>`<div style="color:#15803d;padding:2px 0">✓ ${b.factor} — ${b.impact}</div>`).join('')}
-      </div>` : ''}
     </div>
 
-    <!-- SENSORS -->
+    <!-- LIVE SENSORS -->
     <div class="section">
       <div class="section-label">Live Sensor Readings</div>
       <div class="sensor-grid">
-        <div class="sensor-card ${f?.sentinel2?.freshness==='stale'?'stale':''}">
+        <div class="sensor-card ${freshnessClass(f?.sentinel2?.freshness)}">
           <div class="sensor-name">Sentinel-2 Optical</div>
-          <div class="sensor-value">${v.ndvi?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">NDVI &nbsp;·&nbsp; ${v.ndvi_status||''}</div>
-          <div class="sensor-age">${f?.sentinel2?.age_label||''}</div>
+          <div class="sensor-value">${v?.ndvi?.toFixed(3)||'—'}</div>
+          <div class="sensor-unit">NDVI &nbsp;·&nbsp; ${v?.ndvi_status||'No data'}</div>
+          <div class="sensor-age">${freshnessDot(f?.sentinel2?.freshness)}<span style="color:var(--muted)">${f?.sentinel2?.age_label||'unknown'}</span></div>
         </div>
-        <div class="sensor-card ${sm.smap?.available?'':'unavailable'}">
+        <div class="sensor-card ${freshnessClass(f?.smap?.freshness)}">
           <div class="sensor-name">SMAP L4 Moisture</div>
-          <div class="sensor-value">${sm.smap?.sm_surface_m3?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">m³/m³ surface moisture</div>
-          <div class="sensor-age">${f?.smap?.age_label||''}</div>
+          <div class="sensor-value">${sm?.smap?.sm_surface_m3?.toFixed(3)||'—'}</div>
+          <div class="sensor-unit">m³/m³ surface</div>
+          <div class="sensor-age">${freshnessDot(f?.smap?.freshness)}<span style="color:var(--muted)">${f?.smap?.age_label||'unknown'}</span></div>
         </div>
-        <div class="sensor-card ${s?.available?'':'unavailable'}">
+        <div class="sensor-card ${s?.available ? freshnessClass(f?.sentinel1?.freshness) : 'no-data'}">
           <div class="sensor-name">Sentinel-1 SAR</div>
           <div class="sensor-value">${s?.rvi?.toFixed(3)||'—'}</div>
           <div class="sensor-unit">RVI &nbsp;·&nbsp; ${s?.rvi_interpretation||'No data'}</div>
-          <div class="sensor-age">${f?.sentinel1?.age_label||''} &nbsp;·&nbsp; ${s?.acquisitions||0} passes</div>
+          <div class="sensor-age">${freshnessDot(f?.sentinel1?.freshness)}<span style="color:var(--muted)">${f?.sentinel1?.age_label||'unknown'} &nbsp;·&nbsp; ${s?.acquisitions||0} passes</span></div>
         </div>
-        <div class="sensor-card">
+        <div class="sensor-card recent">
           <div class="sensor-name">ERA5 Trend</div>
-          <div class="sensor-value">${sm.era5?.surface_mean?.toFixed(3)||'—'}</div>
-          <div class="sensor-unit">m³/m³ seasonal trend</div>
-          <div class="sensor-age">Seasonal context</div>
+          <div class="sensor-value">${sm?.era5?.surface_mean?.toFixed(3)||'—'}</div>
+          <div class="sensor-unit">m³/m³ seasonal</div>
+          <div class="sensor-age">${freshnessDot('recent')}<span style="color:var(--muted)">Seasonal context</span></div>
         </div>
       </div>
     </div>
@@ -710,51 +455,50 @@ function renderProfile(d) {
     <!-- FIELD DECISIONS -->
     <div class="section">
       <div class="section-label">Field Decisions Today</div>
-
       ${ag.crop_class === 'tillage' || ag.crop_class === 'arable' ? `
-      <!-- TILLAGE DECISIONS -->
-      <div class="agro-grid" style="grid-template-columns:1fr 1fr;">
-        <div class="agro-card">
-          <div class="agro-label">Crop Canopy</div>
-          <div class="agro-value ${scoreColor(ag.tillage_intelligence?.crop_condition?.label)}">${ag.tillage_intelligence?.crop_condition?.label||'—'}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">NDVI ${ag.tillage_intelligence?.crop_condition?.ndvi||'—'}</div>
+      <div class="tillage-grid">
+        <div class="tillage-card">
+          <div class="tillage-label">🌾 Crop Canopy</div>
+          <div class="tillage-value ${scoreColor(ag.tillage_intelligence?.crop_condition?.label)}">${ag.tillage_intelligence?.crop_condition?.label||'—'}</div>
+          <div class="tillage-sub">NDVI ${ag.tillage_intelligence?.crop_condition?.ndvi||'—'}</div>
         </div>
-        <div class="agro-card">
-          <div class="agro-label">Soil Moisture</div>
-          <div class="agro-value ${scoreColor(ag.tillage_intelligence?.moisture_condition?.label)}">${ag.tillage_intelligence?.moisture_condition?.label||'—'}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">${ag.tillage_intelligence?.moisture_condition?.surface_m3||'—'} m³/m³</div>
+        <div class="tillage-card">
+          <div class="tillage-label">💧 Soil Moisture</div>
+          <div class="tillage-value ${scoreColor(ag.tillage_intelligence?.moisture_condition?.label)}">${ag.tillage_intelligence?.moisture_condition?.label||'—'}</div>
+          <div class="tillage-sub">${ag.tillage_intelligence?.moisture_condition?.surface_m3||'—'} m³/m³</div>
         </div>
       </div>
-      <div style="margin-top:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:12px;">
-        <div style="font-weight:600;margin-bottom:4px;">Machinery:</div>
-        <div style="color:var(--muted)">${ag.tillage_intelligence?.machinery_note||'—'}</div>
-        ${ag.tillage_intelligence?.crop_condition?.age_note ? `
-        <div style="margin-top:6px;color:var(--amber);font-size:11px;">⚠ ${ag.tillage_intelligence.crop_condition.age_note}</div>` : ''}
+      <div class="tillage-note">
+        <div style="font-weight:600;font-size:12px;margin-bottom:4px">🚜 Machinery</div>
+        <div style="font-size:12px;color:var(--muted)">${ag.tillage_intelligence?.machinery_note||'—'}</div>
+        ${ag.tillage_intelligence?.crop_condition?.age_note ? `<div class="tillage-warn">⚠ ${ag.tillage_intelligence.crop_condition.age_note}</div>` : ''}
       </div>
       ` : `
-      <!-- GRASSLAND DECISIONS -->
-      <div class="agro-grid">
-        <div class="agro-card">
-          <div class="agro-label">Grazing</div>
-          <div class="agro-value ${scoreColor(ag.grazing_suitability?.label)}">${ag.grazing_suitability?.label||'—'}</div>
-          ${ag.grazing_suitability?.score !== undefined ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">${ag.grazing_suitability.score}/${ag.grazing_suitability.max_score||8}</div>` : ''}
+      <div class="decision-grid">
+        <div class="decision-card">
+          <div class="decision-emoji">🐄</div>
+          <div class="decision-label">Grazing</div>
+          <div class="decision-value ${scoreColor(ag.grazing_suitability?.label)}">${ag.grazing_suitability?.label||'—'}</div>
+          ${ag.grazing_suitability?.score !== undefined ? `<div class="decision-sub">${ag.grazing_suitability.score}/${ag.grazing_suitability.max_score||8}</div>` : ''}
         </div>
-        <div class="agro-card">
-          <div class="agro-label">Machinery</div>
-          <div class="agro-value ${scoreColor(ag.machinery_trafficability?.label)}">${ag.machinery_trafficability?.label||'—'}</div>
+        <div class="decision-card">
+          <div class="decision-emoji">🚜</div>
+          <div class="decision-label">Machinery</div>
+          <div class="decision-value ${scoreColor(ag.machinery_trafficability?.label)}">${ag.machinery_trafficability?.label||'—'}</div>
         </div>
-        <div class="agro-card">
-          <div class="agro-label">Slurry</div>
-          <div class="agro-value ${scoreColor(ag.slurry_spreading?.suitable)}">${ag.slurry_spreading?.suitable||'—'}</div>
+        <div class="decision-card">
+          <div class="decision-emoji">💧</div>
+          <div class="decision-label">Slurry</div>
+          <div class="decision-value ${scoreColor(ag.slurry_spreading?.suitable)}">${ag.slurry_spreading?.suitable||'—'}</div>
         </div>
       </div>
       ${ag.grazing_suitability?.breakdown ? `
-      <div style="margin-top:12px;font-size:12px;">
-        <div style="font-weight:600;color:var(--text);margin-bottom:6px;">Grazing score breakdown:</div>
+      <div style="margin-top:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px">Grazing score breakdown</div>
         ${Object.entries(ag.grazing_suitability.breakdown).map(([k,v])=>`
-          <div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);">
-            <span style="color:var(--muted)">${v.reason}</span>
-            <span style="font-weight:600;color:${v.points>0?'var(--green)':v.points<0?'var(--red)':'var(--muted)'}">${v.points>0?'+':''}${v.points}</span>
+          <div class="breakdown-row">
+            <span style="font-size:12px;color:var(--muted)">${v.reason}</span>
+            <span class="breakdown-pts ${v.points>0?'pos':v.points<0?'neg':'zero'}">${v.points>0?'+':''}${v.points}</span>
           </div>`).join('')}
       </div>` : ''}
       `}
@@ -765,7 +509,7 @@ function renderProfile(d) {
       <div class="section-label">Cross-sensor Agreement</div>
       <div class="agreement-score">${a.score}<span style="font-size:16px;color:var(--muted);font-family:var(--sans)">/10</span></div>
       <ul class="agreement-list">
-        ${(a.agreements||[]).map(t=>`<li>${t}</li>`).join('')}
+        ${(a.agreements||[]).map(t=>`<li>${t.replace('both independently support moderate vegetation condition', sarConsistency).replace('both independently support moderate vegetation condition', sarConsistency)}</li>`).join('')}
         ${(a.flags||[]).map(t=>`<li class="flag">${t}</li>`).join('')}
       </ul>
     </div>
@@ -773,27 +517,30 @@ function renderProfile(d) {
     <!-- FRESHNESS -->
     <div class="section">
       <div class="section-label">Data Freshness</div>
+      <div style="display:flex;gap:12px;margin-bottom:10px;font-size:11px;color:var(--muted)">
+        <span>🟢 &lt;3d</span><span>🟡 3–14d</span><span>🔴 &gt;14d</span><span>⚪ N/A</span>
+      </div>
       <div class="freshness-grid">
         ${Object.entries(f||{}).map(([k,v])=>`
           <div class="fresh-item">
-            <span class="fresh-sensor">${v.sensor||k}</span>
-            <span class="fresh-age fresh-${v.freshness||'no_data'}">${v.age_label||v.freshness||'—'}</span>
+            <span class="fresh-sensor">${v.sensor?.split(' ')[0]||k}</span>
+            <span class="fresh-age">${freshnessLabel(v.freshness)} <span style="color:var(--muted)">${v.age_label||'—'}</span></span>
           </div>`).join('')}
       </div>
     </div>
 
     <!-- EXPLAINABILITY -->
-    <div class="section" style="grid-column: 1 / -1">
+    <div class="section" style="grid-column:1/-1">
       <div class="section-label">Why These Scores</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px">
         ${Object.entries(e||{}).filter(([k,v])=>v!==null).map(([k,v])=>`
           <div class="explain-item">
             <div class="explain-title">
               ${k.charAt(0).toUpperCase()+k.slice(1)}
-              <span style="font-size:13px;font-weight:400;color:var(--muted)">→ ${v.label||''}</span>
+              <span style="font-size:12px;font-weight:400;color:var(--muted)">→ ${v?.label||''}</span>
             </div>
             <ul class="explain-because">
-              ${(v.because||[]).map(b=>`<li>${b}</li>`).join('')}
+              ${(v?.because||[]).map(b=>`<li>${b}</li>`).join('')}
             </ul>
           </div>`).join('')}
       </div>
@@ -802,7 +549,20 @@ function renderProfile(d) {
   </div>`;
 }
 
+function toggleConf() {
+  const d = document.getElementById('conf-details');
+  const btn = document.querySelector('.conf-toggle');
+  if (d.classList.contains('open')) {
+    d.classList.remove('open');
+    btn.textContent = '▼ View confidence factors';
+  } else {
+    d.classList.add('open');
+    btn.textContent = '▲ Hide confidence factors';
+  }
+}
+
 function showError(msg) {
+  if (stepInterval) clearInterval(stepInterval);
   document.getElementById('scan-btn').disabled = false;
   document.getElementById('panel').innerHTML = `
     <div class="error-box">
@@ -811,7 +571,6 @@ function showError(msg) {
     </div>`;
 }
 </script>
-<script data-goatcounter="https://cube-earth.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script>
+<script data-goatcounter="https://cube-earth.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
