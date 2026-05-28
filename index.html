@@ -418,7 +418,7 @@ function renderProfile(d){
     const col=diff>0.05?'#1d4ed8':diff<-0.05?'#d97706':'#16a34a';
     trendHtml=`<div class="trend-value" style="color:${col}">${arrow} ${label}</div>
     <div class="trend-meta">SMAP ${smap_val.toFixed(3)} vs ERA5 ${era5_val.toFixed(3)} m³/m³ (diff ${diff>=0?'+':''}${diff.toFixed(3)})</div>
-    <div class="trend-meta" style="margin-top:3px">SMAP = current · ERA5 = seasonal baseline</div>`;
+    <div class="trend-meta" style="margin-top:3px"></div>`;
   }
 
   // Freshness score
