@@ -542,7 +542,7 @@ function renderProfile(d){
         <div style="font-size:11px;color:var(--muted)">${(()=>{
           const vt=d?.vegetation_trend;
           if(vt?.available&&(vt.long_trend==='strong_decline'||vt.long_trend==='declining'))
-            return 'Canopy declining (optical stale)';
+            return 'Post-disturbance canopy decline';
           if(vt?.available&&(vt.long_trend==='strong_increase'||vt.long_trend==='increasing'))
             return 'Canopy growing';
           return ndviStatusLabel(v?.ndvi);
