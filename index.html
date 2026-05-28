@@ -566,7 +566,7 @@ function renderProfile(d){
         <div class="sensor-expand-row"><span>GCAP</span><span style="font-weight:600">${v?.gcap?.toFixed(3)||'—'}</span></div>
         <div class="sensor-expand-row"><span>Cloud cover</span><span style="font-weight:600">${v?.cloud_cover||'0'}%</span></div>
         <div class="sensor-expand-row"><span>Confidence contribution</span><span style="font-weight:600">${c?.contributions?.['Sentinel-2']?.percent?.toFixed(1)||'—'}%</span></div>
-        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">HLS Sentinel-2 / Landsat 30m</span></div>
+        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">${d?.vegetation?.gee_optical?"GEE Sentinel-2 SR 10m":"HLS Sentinel-2 / Landsat 30m"}</span></div>
       </div>
     </div>
 
