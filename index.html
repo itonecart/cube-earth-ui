@@ -319,7 +319,7 @@ function confClass(score){
 }
 function ndviStatusLabel(ndvi){
   if(ndvi===null||ndvi===undefined) return 'No data';
-  if(ndvi<0.2)  return 'Post-harvest or senescent canopy';
+  if(ndvi<0.2)  return 'Post-harvest / senescent canopy';
   if(ndvi<0.4)  return 'Sparse vegetation';
   if(ndvi<0.6)  return 'Moderate vegetation';
   if(ndvi<0.8)  return 'Strong vegetation';
@@ -327,7 +327,7 @@ function ndviStatusLabel(ndvi){
 }
 function ndviStatusLabel(ndvi){
   if(ndvi===null||ndvi===undefined) return 'No data';
-  if(ndvi<0.2)  return 'Post-harvest or senescent canopy';
+  if(ndvi<0.2)  return 'Post-harvest / senescent canopy';
   if(ndvi<0.4)  return 'Sparse vegetation';
   if(ndvi<0.6)  return 'Moderate vegetation';
   if(ndvi<0.8)  return 'Strong vegetation';
@@ -699,7 +699,7 @@ function renderProfile(d){
           <div style="font-size:20px;font-weight:700;font-family:var(--mono)">${m.lst_celsius}°C</div>
         </div>
         <div>
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">MODIS NDVI</div>
+          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Regional context (1km)</div>
           <div style="font-size:20px;font-weight:700;font-family:var(--mono)">${m.modis_ndvi||'—'}</div>
           <div style="font-size:10px;color:var(--muted)">1km regional</div>
         </div>
