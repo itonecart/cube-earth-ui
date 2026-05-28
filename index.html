@@ -33,7 +33,8 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh
 
 /* MAP */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-#map{height:32vh;flex-shrink:0;cursor:crosshair;}
+#map{height:28vh;flex-shrink:0;cursor:crosshair;transition:height 0.3s ease;}
+#map.hidden{height:0;overflow:hidden;}
 
 /* TABS */
 .tabs{display:flex;border-bottom:2px solid var(--border);background:var(--bg);flex-shrink:0;overflow-x:auto;position:sticky;top:0;z-index:100;}
@@ -187,7 +188,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--text);height:100vh
 /* MOBILE */
 @media(max-width:768px){
   body{overflow:auto;height:auto;padding-bottom:0;}
-  #map{height:28vh !important;}
+  #map{height:22vh !important;}
   #panel{overflow:visible;padding-bottom:60px;}
   .two-col{grid-template-columns:1fr;}
   .two-col .section{border-right:none;}
@@ -285,6 +286,16 @@ function showTab(name){
   document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
   document.querySelector(`.tab[onclick="showTab('${name}')"]`).classList.add('active');
   document.getElementById(`tab-${name}`)?.classList.add('active');
+  // Show map only on overview
+  const mapEl = document.getElementById('map');
+  if(mapEl){
+    if(name==='overview'){
+      mapEl.classList.remove('hidden');
+      setTimeout(()=>map.invalidateSize(),300);
+    } else {
+      mapEl.classList.add('hidden');
+    }
+  }
 }
 
 // ── HELPERS ──
