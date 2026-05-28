@@ -675,6 +675,19 @@ function renderProfile(d){
         </div>`;
       }).join('')}</div>
       <div style="font-size:10px;color:var(--muted);margin-top:4px">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>
+      ${(vt.events||[]).length>0?`
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px">Events Detected</div>
+        ${(vt.events||[]).map(e=>`
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px">
+          <span style="color:${e.confidence==='high'?'var(--red)':'var(--amber)'};font-size:14px;flex-shrink:0">${e.type==='harvest_or_cut'?'🌾':e.type==='bare_soil'?'🟤':e.type==='recovery_or_reseeding'?'🌱':'⚠'}</span>
+          <div>
+            <div style="font-weight:600;color:var(--text)">${e.label}</div>
+            <div style="color:var(--muted)">${e.date}${e.ndvi_before?` · ${e.ndvi_before} → ${e.ndvi_after}`:` · NDVI ${e.ndvi}`}</div>
+          </div>
+          <span style="margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;background:${e.confidence==='high'?'var(--red-lt)':'var(--amber-lt)'};color:${e.confidence==='high'?'var(--red)':'var(--amber)'}">${e.confidence}</span>
+        </div>`).join('')}
+      </div>`:'' }
       <div style="font-size:9px;color:var(--muted);margin-top:6px;padding-top:4px;border-top:1px solid var(--border)">Source: Sentinel-2 SR processed with Google Earth Engine</div>`;
     })()}
   </div>
