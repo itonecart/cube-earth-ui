@@ -726,8 +726,10 @@ function renderProfile(d){
       const cropClass = ag?.crop_class||'unknown';
       const causes = vt.long_trend==='strong_increase'||vt.long_trend==='increasing'
         ? cropClass==='grassland'?'Spring grass growth · Recovery after grazing':'Spring growth · Crop establishment · Recovery'
-        : vt.long_trend==='strong_decline'||vt.long_trend==='declining'
-        ? (cropClass==='tillage'||cropClass==='arable')?'Crop maturity · Harvest transition · Senescence':'Harvest · Senescence · Grazing · Cutting'
+        : vt.long_trend==='strong_decline'
+        ? (cropClass==='tillage'||cropClass==='arable')?'Crop maturity · Harvest transition · Senescence':(cropClass==='grassland'?'Heavy grazing · Drought stress · Cutting':'Harvest · Senescence · Disturbance')
+        : vt.long_trend==='declining'
+        ? cropClass==='grassland'?'Normal seasonal variation · Late season decline':'Canopy maturity · Seasonal decline'
         : 'Stable canopy · Consistent conditions';
       const _series=(vt.series||[]); const maxNdvi = _series.length?Math.max.apply(null,_series.map(s=>s.ndvi)):1;
       return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
