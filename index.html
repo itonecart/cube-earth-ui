@@ -570,7 +570,10 @@ function renderProfile(d){
           // Fallback to NDVI status
           return ndviStatusLabel(v?.ndvi);
         })()}</div>
-        ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.trend_arrow} ${d.vegetation_trend.trend_label}</div>`:''}
+        ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;display:flex;align-items:center;gap:6px">
+          <span style="font-size:16px">${d.vegetation_trend.long_trend==='strong_increase'?'📈':d.vegetation_trend.long_trend==='increasing'?'↗':d.vegetation_trend.long_trend==='stable'?'➡':d.vegetation_trend.long_trend==='declining'?'↘':'📉'}</span>
+          <span style="color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.interpretation?.trend_label||d.vegetation_trend.trend_label}</span>
+        </div>`:''}
         ${d?.vegetation_trend?.seasonal?.available?`<div style="font-size:11px;margin-top:3px;color:${d.vegetation_trend.seasonal.anomaly_level==='above'?'var(--green)':d.vegetation_trend.seasonal.anomaly_level==='below'?'var(--red)':'var(--muted)'}">
           ${d.vegetation_trend.seasonal.anomaly_pct>0?'+':''}${d.vegetation_trend.seasonal.anomaly_pct}% vs seasonal baseline
         </div>`:''}
@@ -716,15 +719,16 @@ function renderProfile(d){
     ${(()=>{
       const m = d?.modis;
       if(!m?.available) return '<div style="font-size:12px;color:var(--muted)">MODIS unavailable</div>';
-      return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
-        <div>
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">LST ${m.lst_age_days<=2?'🟢':m.lst_age_days<=7?'🟡':'🔴'} ${m.lst_age_days}d</div>
-          <div style="font-size:20px;font-weight:700;font-family:var(--mono)">${m.lst_celsius}°C</div>
+      return `<div style="display:flex;gap:16px;margin-bottom:8px;align-items:center">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase">LST ${m.lst_age_days<=2?'🟢':m.lst_age_days<=7?'🟡':'🔴'}</div>
+          <div style="font-size:16px;font-weight:700;font-family:var(--mono)">${m.lst_celsius}°C</div>
+          <div style="font-size:9px;color:var(--muted)">${m.lst_age_days}d old</div>
         </div>
-        <div>
-          <div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase">Regional context (1km)</div>
-          <div style="font-size:20px;font-weight:700;font-family:var(--mono)">${m.modis_ndvi||'—'}</div>
-          <div style="font-size:10px;color:var(--muted)">1km regional</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase">NDVI 1km</div>
+          <div style="font-size:16px;font-weight:700;font-family:var(--mono)">${m.modis_ndvi||'—'}</div>
+          <div style="font-size:9px;color:var(--muted)">regional</div>
         </div>
       </div>
       <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px">LST TREND (${m.lst_series?.length||0} days)</div>
@@ -771,6 +775,7 @@ function renderProfile(d){
           <span style="font-size:9px;font-family:var(--mono);color:var(--text);width:42px;text-align:right;flex-shrink:0">${s.ndvi}</span>
         </div>`;
       }).join('')}</div>
+      </div>
       <div style="font-size:10px;color:var(--muted);margin-top:4px">Latest: ${vt.latest_ndvi} on ${vt.latest_date}</div>
       ${vt.seasonal?.available?`
       <div style="margin-top:8px;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px">
