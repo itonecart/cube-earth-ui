@@ -776,7 +776,7 @@ function renderProfile(d){
   <div class="section" style="padding:10px 18px">
     <div class="section-label">Contributors — % of final score</div>
     ${Object.entries(c.contributions).map(([k,v])=>{
-      const labels={'Sentinel-2':'Optical','SMAP':'Soil moisture','ERA5':'Weather','Sentinel-1':'Radar','ECOSTRESS':'Thermal unavailable','Parcel':'Parcel','Agreement':'Agreement'};
+      const labels={'Sentinel-2':'Optical','SMAP':'Soil moisture','ERA5':'Weather','Sentinel-1':'Radar','ECOSTRESS':'Thermal (Landsat)','Parcel':'Parcel','Agreement':'Agreement'};
       const friendly=labels[k]||k;
       const barW=Math.min(v.percent*3,100);
       return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border)">
