@@ -541,10 +541,10 @@ function renderProfile(d){
         <div style="font-size:22px;font-weight:700;font-family:var(--mono)">${v?.ndvi?.toFixed(3)||'—'}</div>
         <div style="font-size:11px;color:var(--muted)">${(()=>{
           const vt=d?.vegetation_trend;
-          if(vt?.available&&(vt.long_trend==='strong_decline'||vt.long_trend==='declining'))
-            return 'Post-disturbance canopy decline';
-          if(vt?.available&&(vt.long_trend==='strong_increase'||vt.long_trend==='increasing'))
-            return 'Canopy growing';
+          const interp=vt?.interpretation;
+          // Use backend interpretation if available
+          if(interp?.trend_label) return interp.trend_label;
+          // Fallback to NDVI status
           return ndviStatusLabel(v?.ndvi);
         })()}</div>
         ${d?.vegetation_trend?.available?`<div style="font-size:12px;font-weight:700;margin-top:4px;color:${d.vegetation_trend.long_trend==='increasing'||d.vegetation_trend.long_trend==='strong_increase'?'var(--green)':d.vegetation_trend.long_trend==='stable'?'var(--muted)':'var(--red)'}">${d.vegetation_trend.trend_arrow} ${d.vegetation_trend.trend_label}</div>`:''}
