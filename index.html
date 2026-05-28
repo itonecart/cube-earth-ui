@@ -841,7 +841,7 @@ function renderProfile(d){
     <div class="fresh-legend"><span>🟢 &lt;3d</span><span>🟡 3–14d</span><span>🔴 &gt;14d</span><span>⚪ N/A</span></div>
     ${Object.entries(f||{}).map(([k,v])=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px">
-      <span style="font-weight:600">${v.sensor?.split(' ')[0]||k}</span>
+      <span style="font-weight:600">${v.sensor||k}</span>
       <span>${freshnessEmoji(v.freshness)} <span style="color:var(--muted)">${v.freshness==='seasonal_context'?'seasonal baseline':v.age_label||'—'}</span></span>
     </div>`).join('')}
   </div>
