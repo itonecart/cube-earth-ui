@@ -308,7 +308,7 @@ function confClass(score){
 }
 function ndviStatusLabel(ndvi){
   if(ndvi===null||ndvi===undefined) return 'No data';
-  if(ndvi<0.2)  return 'Bare soil or very sparse';
+  if(ndvi<0.2)  return 'Post-harvest or senescent canopy';
   if(ndvi<0.4)  return 'Sparse vegetation';
   if(ndvi<0.6)  return 'Moderate vegetation';
   if(ndvi<0.8)  return 'Strong vegetation';
@@ -316,7 +316,7 @@ function ndviStatusLabel(ndvi){
 }
 function ndviStatusLabel(ndvi){
   if(ndvi===null||ndvi===undefined) return 'No data';
-  if(ndvi<0.2)  return 'Bare soil or very sparse';
+  if(ndvi<0.2)  return 'Post-harvest or senescent canopy';
   if(ndvi<0.4)  return 'Sparse vegetation';
   if(ndvi<0.6)  return 'Moderate vegetation';
   if(ndvi<0.8)  return 'Strong vegetation';
