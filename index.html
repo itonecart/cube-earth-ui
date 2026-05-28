@@ -639,6 +639,29 @@ function renderProfile(d){
       </div>
     </div>
 
+    ${d?.thermal?.available&&d.thermal?.lst_celsius?`
+    <div class="sensor-card" onclick="toggleSensor('thermal-exp')" style="border-top:3px solid #f59e0b">
+      <div class="sensor-header" style="padding:10px 14px">
+        <div class="sensor-dot recent"></div>
+        <div class="sensor-info">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase">Thermal LST 🟡</span>
+            <span style="font-size:14px;font-weight:700;font-family:var(--mono)">${d.thermal.lst_celsius}°C</span>
+            <span style="font-size:11px;color:var(--muted)">${d.thermal.interpretation||'Normal range'}</span>
+            <span style="margin-left:auto;font-size:10px;color:var(--muted)">${d.thermal.age_days||'—'}d old</span>
+          </div>
+        </div>
+        <div class="sensor-chevron" id="thermal-exp-ch">▼</div>
+      </div>
+      <div class="sensor-expand" id="thermal-exp">
+        <div class="sensor-expand-row"><span>LST Celsius</span><span style="font-weight:600">${d.thermal.lst_celsius}°C</span></div>
+        <div class="sensor-expand-row"><span>LST Kelvin</span><span style="font-weight:600">${d.thermal.lst_kelvin||'—'} K</span></div>
+        <div class="sensor-expand-row"><span>Acquisitions</span><span style="font-weight:600">${d.thermal.acquisitions||'—'}</span></div>
+        <div class="sensor-expand-row"><span>Source</span><span style="font-weight:600">${d.thermal.source||'—'}</span></div>
+        <div class="sensor-expand-row"><span>Note</span><span style="font-weight:600">Landsat fallback — ECOSTRESS unavailable</span></div>
+      </div>
+    </div>`:''}
+
     <div class="sensor-card" onclick="toggleSensor('era5-exp')">
       <div class="sensor-header" style="padding:10px 14px">
         <div class="sensor-dot recent"></div>
