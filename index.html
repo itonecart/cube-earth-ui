@@ -752,7 +752,7 @@ function renderProfile(d){
       const col = vt.long_trend==='increasing'||vt.long_trend==='strong_increase'?'var(--green)':vt.long_trend==='stable'?'var(--muted)':'var(--red)';
       const cropClass = ag?.crop_class||'unknown';
       const causes = vt.long_trend==='strong_increase'||vt.long_trend==='increasing'
-        ? cropClass==='grassland'?'Spring grass growth · Recovery after grazing':'Spring growth · Crop establishment · Recovery'
+        ? cropClass==='grassland'?'Spring grass growth · Recovery after grazing':(cropClass==='tillage'||cropClass==='arable')?'Crop canopy development · Spring growth':'Spring growth · Recovery'
         : vt.long_trend==='strong_decline'
         ? (cropClass==='tillage'||cropClass==='arable')?'Crop maturity · Harvest transition · Senescence':(cropClass==='grassland'?'Heavy grazing · Drought stress · Cutting':'Harvest · Senescence · Disturbance')
         : vt.long_trend==='declining'
