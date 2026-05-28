@@ -440,12 +440,6 @@ function renderProfile(d){
       <div style="font-size:14px;font-weight:700;color:var(--text)">${ag.crop_stage.label}</div>
       <div style="font-size:11px;color:var(--muted);margin-top:2px">${ag.crop_stage.advice}</div>
     </div>`:''}
-    ${ag?.crop_stage?`
-    <div style="margin-top:8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
-      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px">Crop Stage</div>
-      <div style="font-size:14px;font-weight:700;color:var(--text)">${ag.crop_stage.label}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">${ag.crop_stage.advice}</div>
-    </div>`:''}
     <div style="margin-top:6px">
       ${p?.grassland?'<span class="badge badge-green">Grassland</span>':''}
       ${p?.tillage?'<span class="badge badge-amber">Tillage</span>':''}
